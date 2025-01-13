@@ -38,7 +38,7 @@ export class CustomerService {
                     email: customerData.Email,
                     name: customerData.Name,
                     profilePhotoUrl: customerData.ProfilePhotoUrl,
-                    idToken: customerData.IdToken,
+                    // idToken: customerData.IdToken,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 });

@@ -14,8 +14,8 @@ export class Customer {
     @Column({ nullable: true, type: 'varchar', default: null })
     profilePhotoUrl?: string | null;
 
-    @Column()
-    idToken!: string;
+    // @Column()
+    // idToken!: string;
 
     @CreateDateColumn()
     createdAt!: Date;
