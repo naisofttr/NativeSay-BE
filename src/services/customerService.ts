@@ -14,6 +14,7 @@ export class CustomerService {
 
     async createCustomer(customerData: CreateCustomerDto): Promise<CreatedCustomerResponse> {
         try {
+            const existingCustomerTest = await this.getCustomerByEmail(customerData.Email);
             // Google Token doğrulama
             const isValidToken = await this.googleAuthService.verifyGoogleToken(customerData.IdToken);
             if (!isValidToken) {

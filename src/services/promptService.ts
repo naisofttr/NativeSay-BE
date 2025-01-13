@@ -15,7 +15,7 @@ export class PromptService {
             const response = await axios.post<ChatGPTResponse>(
                 this.endpoint,
                 {
-                    model: "gpt-3.5-turbo",
+                    model: "gpt-3.5-turbo",// 3.5-turbo veya "gpt-4"
                     messages: [
                         {
                             role: "user",
