@@ -37,6 +37,6 @@ app.get('/health', (req, res) => {
     res.json({ 
         status: 'up',
         timestamp: new Date(),
-        dbStatus: AppDataSource.isConnected() ? 'connected' : 'disconnected'
+        dbStatus: AppDataSource.isInitialized ? 'connected' : 'disconnected'
     });
-}); 
+});

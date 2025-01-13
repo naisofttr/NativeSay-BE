@@ -4,7 +4,13 @@ export class GoogleAuthService {
     private client: OAuth2Client;
 
     constructor() {
-        this.client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        if (!process.env.GOOGLE_CLIENT_ID) {
+            throw new Error('GOOGLE_CLIENT_ID is not defined in environment variables');
+        }
+        this.client = new OAuth2Client({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET
+        });
     }
 
     async verifyGoogleToken(token: string): Promise<boolean> {
@@ -15,9 +21,15 @@ export class GoogleAuthService {
             });
 
             const payload = ticket.getPayload();
-            return payload ? true : false;
+            if (!payload) {
+                console.error('Token payload is empty');
+                return false;
+            }
+
+            console.log('Token verification payload:', payload);
+            return true;
         } catch (error) {
-            console.error('Google token doğrulama hatası:', error);
+            console.error('Google token doğrulama detaylı hata:', error);
             return false;
         }
     }

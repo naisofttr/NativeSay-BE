@@ -1,59 +1,30 @@
-import { DataSource, EntityTarget, ObjectLiteral } from 'typeorm';
+import { DataSource } from 'typeorm';
+import { Customer } from '../models/customer';
+import { join } from 'path';
 
-class DatabaseConnection {
-    private static instance: DataSource;
-    private static entities: any[] = [];
-
-    static async initialize() {
-        if (!this.instance) {
-            this.instance = new DataSource({
-                type: 'mssql',
-                host: 'mssql-189621-0.cloudclusters.net,10079',
-                port: 1433,
-                database: 'TurkcesiNe',
-                username: 'brewcloud',
-                password: '123654Bc!',
-                options: {
-                    encrypt: true,
-                    trustServerCertificate: true,
-                    enableArithAbort: true,
-                    instanceName: 'SQLEXPRESS'
-                },
-                synchronize: false,
-                logging: true,
-                entities: this.entities,
-                migrations: ['src/migrations/*.ts'],
-                migrationsTableName: "migrations_history",
-                extra: {
-                    trustServerCertificate: true,
-                    validateConnection: false,
-                    connectionTimeout: 30000
-                },
-                requestTimeout: 30000
-            });
-
-            await this.instance.initialize();
-        }
-        return this.instance;
+export const AppDataSource = new DataSource({
+    type: 'mssql',
+    host: process.env.DB_SERVER,
+    port: parseInt(process.env.DB_PORT || '10079'),
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    synchronize: true,
+    logging: true,
+    entities: [join(__dirname, '..', 'models', '*.{ts,js}')],
+    options: {
+        encrypt: true,
+        trustServerCertificate: true
     }
+});
 
-    static addEntity(entity: EntityTarget<ObjectLiteral>) {
-        if (!this.entities.includes(entity)) {
-            this.entities.push(entity);
-        }
+export const initializeDatabase = async () => {
+    try {
+        await AppDataSource.initialize();
+        console.log('Veritabanı bağlantısı başarılı');
+        return true;
+    } catch (error) {
+        console.error('Veritabanı bağlantı hatası:', error);
+        return false;
     }
-
-    static getRepository<T extends ObjectLiteral>(entity: EntityTarget<T>) {
-        if (!this.instance || !this.instance.isInitialized) {
-            throw new Error('Database connection not initialized');
-        }
-        this.addEntity(entity);
-        return this.instance.getRepository(entity);
-    }
-
-    static isConnected(): boolean {
-        return this.instance?.isInitialized ?? false;
-    }
-}
-
-export const AppDataSource = DatabaseConnection;
+};

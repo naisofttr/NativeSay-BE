@@ -11,21 +11,17 @@ export class Customer {
     @Column()
     name!: string;
 
-    @Column({ name: 'profile_photo_url', nullable: true })
-    profilePhotoUrl?: string;
+    @Column({ nullable: true, type: 'varchar', default: null })
+    profilePhotoUrl?: string | null;
 
-    @Column({ name: 'id_token' })
+    @Column()
     idToken!: string;
 
-    @CreateDateColumn({ name: 'created_at' })
+    @CreateDateColumn()
     createdAt!: Date;
 
-    @UpdateDateColumn({ name: 'updated_at' })
+    @UpdateDateColumn()
     updatedAt!: Date;
-
-    constructor(partial: Partial<Customer>) {
-        Object.assign(this, partial);
-    }
 }
 
 export interface CreateCustomerDto {
