@@ -14,7 +14,8 @@ const getController = (() => {
     };
 })();
 
-router.post('/customers', (req, res) => {
+// /api/customer/createCustomer şeklinde erişim için
+router.post('/customer/createCustomer', (req, res) => {
     try {
         return getController().createCustomer(req, res);
     } catch (error) {
