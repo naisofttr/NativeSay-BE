@@ -28,7 +28,7 @@ export class CustomerService {
             const currentDateTime = new Date();
 
             if (existingCustomer) {
-                // Müşteri varsa ve bilgileri değişmişse güncelle
+                // customer varsa ve bilgileri değişmişse güncelle
                 if (existingCustomer.name !== customerData.Name || 
                     existingCustomer.profilePhotoUrl !== customerData.ProfilePhotoUrl) {
                     
@@ -48,7 +48,7 @@ export class CustomerService {
                     data: existingCustomer
                 };
             } else {
-                // Yeni müşteri oluştur
+                // Yeni customer oluştur
                 const newCustomer = new Customer({
                     email: customerData.Email,
                     name: customerData.Name,
@@ -66,7 +66,7 @@ export class CustomerService {
             const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';
             return {
                 success: false,
-                errorMessage: `Müşteri oluşturulurken bir hata oluştu: ${errorMessage}`
+                errorMessage: `Customer oluşturulurken bir hata oluştu: ${errorMessage}`
             };
         }
     }
