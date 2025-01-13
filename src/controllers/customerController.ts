@@ -22,11 +22,19 @@ export class CustomerController {
 
             const newCustomer = await this.customerService.createCustomer(customerData);
             
+            if (!newCustomer.success) {
+                return res.status(400).json({
+                    success: false,
+                    message: newCustomer.errorMessage
+                });
+            }
+
             return res.status(201).json({
                 success: true,
-                data: newCustomer,
+                data: newCustomer.data,
                 message: 'Müşteri başarıyla oluşturuldu'
             });
+
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';
             
