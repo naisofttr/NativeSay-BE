@@ -10,7 +10,6 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use('/api', customerRoutes);
-app.use('/api/chatgpt', promptRoutes);
 app.use('/api', promptRoutes);
 // Veritabanı bağlantısını dene ama hata olursa da uygulamayı başlat
 AppDataSource.initialize()
