@@ -1,4 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
+import { TokenResponse } from '../models/customer';
 
 export class GoogleAuthService {
     private client: OAuth2Client;
@@ -31,6 +32,25 @@ export class GoogleAuthService {
         } catch (error) {
             console.error('Google token doğrulama detaylı hata:', error);
             return false;
+        }
+    }
+
+    async refreshAccessToken(refreshToken: string): Promise<TokenResponse | null> {
+        try {
+            const { credentials } = await this.client.refreshAccessToken();
+            
+            if (!credentials.access_token) {
+                return null;
+            }
+
+            return {
+                accessToken: credentials.access_token,
+                refreshToken: credentials.refresh_token || refreshToken,
+                expiresIn: credentials.expiry_date ? Math.floor((credentials.expiry_date - Date.now()) / 1000) : 3600
+            };
+        } catch (error) {
+            console.error('Refresh token hatası:', error);
+            return null;
         }
     }
 } 

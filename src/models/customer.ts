@@ -14,8 +14,11 @@ export class Customer {
     @Column({ nullable: true, type: 'varchar', default: null })
     profilePhotoUrl?: string | null;
 
-    // @Column()
-    // idToken!: string;
+    @Column({ nullable: true })
+    refreshToken?: string;
+
+    @Column({ nullable: true })
+    refreshTokenExpiryDate?: Date;
 
     @CreateDateColumn()
     createdAt!: Date;
@@ -35,4 +38,10 @@ export interface CreatedCustomerResponse {
     success: boolean;
     data?: Customer;
     errorMessage?: string;
+}
+
+export interface TokenResponse {
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
 } 

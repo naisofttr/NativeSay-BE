@@ -4,6 +4,7 @@ import express from 'express';
 import { AppDataSource } from './config/database';
 import customerRoutes from './routes/customerRoutes';
 import promptRoutes from './routes/promptRoutes';
+import authRoutes from './routes/authRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use('/api', customerRoutes);
 app.use('/api', promptRoutes);
+app.use('/api', authRoutes);
 
 // Veritabanı bağlantısını başlat
 AppDataSource.initialize()
