@@ -10,16 +10,16 @@ export class AuthController {
 
     async refreshToken(req: Request, res: Response) {
         try {
-            const { refreshToken } = req.body;
+            const { refreshToken, clientDate } = req.body;
 
-            if (!refreshToken) {
+            if (!refreshToken || !clientDate) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Refresh token zorunludur'
+                    message: 'Refresh token ve tarih bilgisi zorunludur'
                 });
             }
 
-            const newTokens = await this.authService.refreshToken(refreshToken);
+            const newTokens = await this.authService.refreshToken(refreshToken, clientDate);
 
             if (!newTokens) {
                 return res.status(401).json({

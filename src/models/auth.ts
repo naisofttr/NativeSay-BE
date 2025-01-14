@@ -6,4 +6,5 @@ export interface TokenResponse {
 
 export interface RefreshTokenRequest {
     refreshToken: string;
+    clientDate: string;
 } 

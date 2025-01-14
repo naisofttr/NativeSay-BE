@@ -11,7 +11,7 @@ export class AuthService {
         this.googleAuthService = new GoogleAuthService();
     }
 
-    async refreshToken(refreshToken: string): Promise<TokenResponse | null> {
+    async refreshToken(refreshToken: string, clientDate: string): Promise<TokenResponse | null> {
         try {
             const customer = await this.customerRepository.findOne({
                 where: { refreshToken }
@@ -28,7 +28,11 @@ export class AuthService {
 
             // Refresh token'ı güncelle
             customer.refreshToken = newTokens.refreshToken;
-            customer.refreshTokenExpiryDate = new Date(Date.now() + newTokens.expiresIn * 1000);
+            
+            // Client'ın gönderdiği tarih bilgisini kullan
+            const clientDateTime = new Date(clientDate);
+            customer.refreshTokenExpiryDate = new Date(clientDateTime.getTime() + (newTokens.expiresIn * 1000));
+            
             await this.customerRepository.save(customer);
 
             return newTokens;
