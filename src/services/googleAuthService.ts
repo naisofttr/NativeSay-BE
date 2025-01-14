@@ -37,6 +37,10 @@ export class GoogleAuthService {
 
     async refreshAccessToken(refreshToken: string): Promise<TokenResponse | null> {
         try {
+            this.client.setCredentials({
+                refresh_token: refreshToken
+            });
+
             const { credentials } = await this.client.refreshAccessToken();
             
             if (!credentials.access_token) {
