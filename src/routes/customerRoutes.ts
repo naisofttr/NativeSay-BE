@@ -27,4 +27,16 @@ router.post('/customer/createCustomer', (req, res) => {
     }
 });
 
+router.post('/customer/createWithApple', (req, res) => {
+    try {
+        return getController().createCustomerWithApple(req, res);
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Sunucu hatası',
+            error: error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu'
+        });
+    }
+});
+
 export default router; 

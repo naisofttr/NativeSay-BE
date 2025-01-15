@@ -2,16 +2,19 @@ import { TokenResponse } from '../models/auth';
 import { GoogleAuthService } from './googleAuthService';
 import { AppDataSource } from '../config/database';
 import { Customer } from '../models/customer';
+import { AppleAuthService } from './appleAuthService';
 
 export class AuthService {
     private customerRepository = AppDataSource.getRepository(Customer);
     private googleAuthService: GoogleAuthService;
+    private appleAuthService: AppleAuthService;
 
     constructor() {
         this.googleAuthService = new GoogleAuthService();
+        this.appleAuthService = new AppleAuthService();
     }
 
-    async refreshToken(refreshToken: string, clientDate: string): Promise<TokenResponse | null> {
+    async refreshToken(refreshToken: string, clientDate: string, provider: 'google' | 'apple' = 'google'): Promise<TokenResponse | null> {
         try {
             const customer = await this.customerRepository.findOne({
                 where: { refreshToken }
@@ -21,7 +24,10 @@ export class AuthService {
                 return null;
             }
 
-            const newTokens = await this.googleAuthService.refreshAccessToken(refreshToken);
+            const newTokens = provider === 'google' 
+                ? await this.googleAuthService.refreshAccessToken(refreshToken)
+                : await this.appleAuthService.refreshAppleToken(refreshToken);
+
             if (!newTokens) {
                 return null;
             }

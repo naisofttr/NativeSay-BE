@@ -19,5 +19,6 @@ export default new DataSource({
     extra: {
         validateConnection: false,
         trustServerCertificate: true
-    }
+    },
+    logging: false
 }); 

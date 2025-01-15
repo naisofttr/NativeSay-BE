@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CustomerService } from '../services/customerService';
 import { CreateCustomerDto } from '../models/customer';
+import { AppleTokenRequest } from '../models/auth';
 
 export class CustomerController {
     private customerService: CustomerService;
@@ -42,6 +43,41 @@ export class CustomerController {
                 success: false,
                 message: 'Müşteri oluşturulurken bir hata oluştu',
                 error: errorMessage
+            });
+        }
+    }
+
+    async createCustomerWithApple(req: Request, res: Response) {
+        try {
+            const appleData: AppleTokenRequest = req.body;
+            
+            if (!appleData.code) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Apple authorization code zorunludur'
+                });
+            }
+
+            const newCustomer = await this.customerService.createCustomerWithApple(appleData);
+            
+            if (!newCustomer.success) {
+                return res.status(400).json({
+                    success: false,
+                    message: newCustomer.errorMessage
+                });
+            }
+
+            return res.status(201).json({
+                success: true,
+                data: newCustomer.data,
+                message: 'Müşteri başarıyla oluşturuldu'
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: 'Apple ile müşteri oluşturulurken bir hata oluştu',
+                error: error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu'
             });
         }
     }
