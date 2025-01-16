@@ -1,6 +1,7 @@
 import { Customer, CreateCustomerDto, CreatedCustomerResponse } from '../models/customer';
 import { GoogleAuthService } from './googleAuthService';
 import { AppDataSource } from '../config/database';
+import { TokenResponse } from '../models/auth';
 import { AppleAuthService } from './appleAuthService';
 import { AppleTokenRequest } from '../models/auth';
 
@@ -17,13 +18,13 @@ export class CustomerService {
     /**
      * Yeni müşteri oluşturur veya mevcut müşteriyi günceller
      * @param customerData Müşteri bilgilerini içeren DTO
-     * @returns Oluşturulan/güncellenen müşteri bilgisi veya hata mesajı
+     * @returns Oluşturulan/güncellenen müşteri bilgisi ve token bilgileri
      */
     async createCustomer(customerData: CreateCustomerDto): Promise<CreatedCustomerResponse> {
         try {
-            // Google token'ı doğrula
-            const isValidToken = await this.googleAuthService.verifyGoogleToken(customerData.IdToken);
-            if (!isValidToken) {
+            // Google token'ı doğrula ve kullanıcı bilgilerini al
+            const tokenInfo = await this.googleAuthService.verifyAndGetTokenInfo(customerData.IdToken);
+            if (!tokenInfo.isValid) {
                 return {
                     success: false,
                     errorMessage: 'Geçersiz Google Token'
@@ -35,31 +36,38 @@ export class CustomerService {
                 where: { email: customerData.Email }
             });
 
+            const clientDateTime = new Date(customerData.clientDate);
+            const tokenExpiryDate = new Date(clientDateTime.getTime() + (tokenInfo.tokens.expiresIn * 1000));
+
             if (customer) {
                 // Müşteri varsa bilgilerini güncelle
                 customer.name = customerData.Name;
                 customer.profilePhotoUrl = customerData.ProfilePhotoUrl;
-                customer.updatedAt = new Date();
+                customer.refreshToken = tokenInfo.tokens.refreshToken;
+                customer.refreshTokenExpiryDate = tokenExpiryDate;
+                customer.updatedAt = clientDateTime;
             } else {
                 // Yeni müşteri oluştur
                 customer = this.customerRepository.create({
                     email: customerData.Email,
                     name: customerData.Name,
                     profilePhotoUrl: customerData.ProfilePhotoUrl,
-                    createdAt: new Date(),
-                    updatedAt: new Date()
+                    refreshToken: tokenInfo.tokens.refreshToken,
+                    refreshTokenExpiryDate: tokenExpiryDate,
+                    createdAt: clientDateTime,
+                    updatedAt: clientDateTime
                 });
             }
 
-            // Müşteriyi kaydet ve sonucu döndür
+            // Müşteriyi kaydet
             const savedCustomer = await this.customerRepository.save(customer);
 
             return {
                 success: true,
-                data: savedCustomer
+                data: savedCustomer,
+                tokens: tokenInfo.tokens
             };
         } catch (error) {
-            // Hata durumunda uygun mesajı döndür
             const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';
             return {
                 success: false,
@@ -82,12 +90,17 @@ export class CustomerService {
                 where: { email: appleUser.email }
             });
 
+            const clientDateTime = new Date(appleData.clientDate);
+            const tokenExpiryDate = new Date(clientDateTime.getTime() + 3600 * 1000);
+
             if (customer) {
                 // Müşteri varsa bilgilerini güncelle
                 if (appleUser.name) {
                     customer.name = `${appleUser.name.firstName} ${appleUser.name.lastName}`.trim();
                 }
-                customer.updatedAt = new Date();
+                customer.refreshToken = appleData.code;
+                customer.refreshTokenExpiryDate = tokenExpiryDate;
+                customer.updatedAt = clientDateTime;
             } else {
                 // Yeni müşteri oluştur
                 customer = this.customerRepository.create({
@@ -95,8 +108,10 @@ export class CustomerService {
                     name: appleUser.name ? 
                         `${appleUser.name.firstName} ${appleUser.name.lastName}`.trim() : 
                         appleUser.email.split('@')[0],
-                    createdAt: new Date(),
-                    updatedAt: new Date()
+                    refreshToken: appleData.code,
+                    refreshTokenExpiryDate: tokenExpiryDate,
+                    createdAt: clientDateTime,
+                    updatedAt: clientDateTime
                 });
             }
 
@@ -104,7 +119,12 @@ export class CustomerService {
 
             return {
                 success: true,
-                data: savedCustomer
+                data: savedCustomer,
+                tokens: {
+                    accessToken: appleData.code,
+                    refreshToken: appleData.code,
+                    expiresIn: 3600
+                }
             };
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';

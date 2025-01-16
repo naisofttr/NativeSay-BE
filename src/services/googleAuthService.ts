@@ -1,6 +1,11 @@
 import { OAuth2Client } from 'google-auth-library';
 import { TokenResponse } from '../models/customer';
 
+interface TokenInfo {
+    isValid: boolean;
+    tokens: TokenResponse;
+}
+
 export class GoogleAuthService {
     private client: OAuth2Client;
 
@@ -55,6 +60,36 @@ export class GoogleAuthService {
         } catch (error) {
             console.error('Refresh token hatası:', error);
             return null;
+        }
+    }
+
+    async verifyAndGetTokenInfo(idToken: string): Promise<TokenInfo> {
+        try {
+            const ticket = await this.client.verifyIdToken({
+                idToken: idToken,
+                audience: process.env.GOOGLE_CLIENT_ID
+            });
+
+            const payload = ticket.getPayload();
+            if (!payload) {
+                console.error('Token payload is empty');
+                return { isValid: false, tokens: { accessToken: '', refreshToken: '', expiresIn: 0 } };
+            }
+
+            // Access token ve refresh token al
+            const { tokens } = await this.client.getToken(idToken);
+            
+            return {
+                isValid: true,
+                tokens: {
+                    accessToken: tokens.access_token || '',
+                    refreshToken: tokens.refresh_token || '',
+                    expiresIn: tokens.expiry_date ? Math.floor((tokens.expiry_date - Date.now()) / 1000) : 3600
+                }
+            };
+        } catch (error) {
+            console.error('Google token doğrulama detaylı hata:', error);
+            return { isValid: false, tokens: { accessToken: '', refreshToken: '', expiresIn: 0 } };
         }
     }
 } 
