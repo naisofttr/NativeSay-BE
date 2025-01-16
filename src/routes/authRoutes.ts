@@ -4,6 +4,7 @@ import { AuthController } from '../controllers/authController';
 const router = Router();
 const authController = new AuthController();
 
-router.post('/auth/refreshToken', authController.refreshToken.bind(authController));
+// /api/auth/login şeklinde erişim için
+router.post('/auth/login', authController.login.bind(authController));
 
 export default router; 

@@ -1,42 +1,46 @@
 import { Request, Response } from 'express';
-import { AuthService } from '../services/authService';
+import { LoginService } from '../services/loginService';
+import { CreateCustomerDto } from '../models/customer';
+import { LoginType } from '../enums/loginType';
 
 export class AuthController {
-    private authService: AuthService;
+    private loginService: LoginService;
 
     constructor() {
-        this.authService = new AuthService();
+        this.loginService = new LoginService();
     }
 
-    async refreshToken(req: Request, res: Response) {
+    async login(req: Request, res: Response) {
         try {
-            const { refreshToken, clientDate } = req.body;
+            const { IdToken, ClientDate, Email, Name, ProfilePhotoUrl, LoginType: loginType } = req.body;
 
-            if (!refreshToken || !clientDate) {
+            if (!IdToken || !ClientDate || !Email || !Name || !loginType) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Refresh token ve tarih bilgisi zorunludur'
+                    message: 'IdToken, ClientDate, Email, Name ve LoginType zorunlu alanlardır'
                 });
             }
 
-            const newTokens = await this.authService.refreshToken(refreshToken, clientDate);
+            const customerData: CreateCustomerDto = { IdToken, Email, Name, ProfilePhotoUrl };
+            const result = await this.loginService.handleLogin(customerData, loginType);
 
-            if (!newTokens) {
-                return res.status(401).json({
+            if (!result.success) {
+                return res.status(400).json({
                     success: false,
-                    message: 'Geçersiz veya süresi dolmuş refresh token'
+                    message: result.errorMessage
                 });
             }
 
             return res.status(200).json({
                 success: true,
-                data: newTokens
+                data: result.data,
+                message: 'Giriş başarılı'
             });
 
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                message: 'Token yenileme işlemi başarısız',
+                message: 'Giriş işlemi sırasında bir hata oluştu',
                 error: error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu'
             });
         }
