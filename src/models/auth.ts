@@ -21,7 +21,6 @@ export interface AppleAuthResponse {
 
 export interface AppleTokenRequest {
     code: string;
-    clientDate: string;
     name?: {
         firstName: string;
         lastName: string;

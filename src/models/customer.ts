@@ -32,14 +32,12 @@ export interface CreateCustomerDto {
     Email: string;
     Name: string;
     ProfilePhotoUrl?: string;
-    clientDate: string;
 }
 
 export interface CreatedCustomerResponse {
     success: boolean;
     data?: Customer;
     errorMessage?: string;
-    tokens?: TokenResponse;
 }
 
 export interface TokenResponse {
