@@ -4,6 +4,7 @@ import { GoogleAuthService } from './googleAuthService';
 import { CreateCustomerService } from '../CustomerServices/Commands/createCustomerService';
 import { UpdateCustomerService } from '../CustomerServices/Commands/updateCustomerService';
 import { AppDataSource } from '../../config/database';
+import { refreshAccessToken } from '../JwtTokenServices/refreshAccessToken';
 
 export class LoginWithGoogleService {
     private googleAuthService: GoogleAuthService;
@@ -38,7 +39,7 @@ export class LoginWithGoogleService {
             });
 
             // Refresh token işlemleri
-            const tokenInfo = await this.googleAuthService.refreshAccessToken(customerData.Email);
+            const tokenInfo = await refreshAccessToken(customerData.Email);
             if (!tokenInfo) {
                 return {
                     success: false,

@@ -35,26 +35,4 @@ export class GoogleAuthService {
             return false;
         }
     }
-
-    async generateJwtToken(payload: object): Promise<string> {
-        const secretKey = process.env.JWT_SECRET || 'your_jwt_secret';
-        return jwt.sign(payload, secretKey);
-    }
-
-    async refreshAccessToken(email: string): Promise<TokenResponse | null> {
-        try {
-            // JWT token oluştur
-            const payload = {
-                email: email, // Kullanıcının e-posta adresi
-            };
-            const jwtToken = await this.generateJwtToken(payload);
-
-            return {
-                refreshToken: jwtToken
-            };
-        } catch (error) {
-            console.error('JWT token oluşturma hatası:', error);
-            return null;
-        }
-    }
 } 

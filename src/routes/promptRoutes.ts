@@ -1,10 +1,10 @@
-import { Router } from 'express';
+import express from 'express';
 import { PromptController } from '../controllers/promptController';
+import { verifyRefreshTokenMiddleware } from '../middleware/authMiddleware';
 
-const router = Router();
+const router = express.Router();
 const promptController = new PromptController();
 
-// /api/prompt/getPrompt şeklinde erişim için
-router.post('/prompt/getPrompt', promptController.getPrompt.bind(promptController));
+router.post('/propmt/getPrompt', verifyRefreshTokenMiddleware, (req, res) => promptController.getPrompt(req, res));
 
 export default router; 
