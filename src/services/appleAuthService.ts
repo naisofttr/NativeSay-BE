@@ -72,9 +72,7 @@ export class AppleAuthService {
             }
 
             return {
-                accessToken: tokenResponse.access_token,
-                refreshToken: tokenResponse.refresh_token || refreshToken,
-                expiresIn: tokenResponse.expires_in || 3600
+                refreshToken: tokenResponse.refresh_token || refreshToken
             };
         } catch (error) {
             console.error('Apple refresh token hatası:', error);

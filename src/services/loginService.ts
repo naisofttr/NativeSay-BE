@@ -1,4 +1,5 @@
-import { CreateCustomerDto, CreatedCustomerResponse } from '../models/customer';
+import { CreatedCustomerResponse } from '../models/customer';
+import { CreateCustomerDto } from '../dtos/createCustomerDto';
 import { LoginWithGoogleService } from './loginWithGoogleService';
 import { LoginWithAppleService } from './loginWithAppleService';
 import { LoginType } from '../enums/loginType';

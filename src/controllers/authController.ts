@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { LoginService } from '../services/loginService';
-import { CreateCustomerDto } from '../models/customer';
-import { LoginType } from '../enums/loginType';
+import { CreateCustomerDto } from '../dtos/createCustomerDto';
 
 export class AuthController {
     private loginService: LoginService;
@@ -21,7 +20,7 @@ export class AuthController {
                 });
             }
 
-            const customerData: CreateCustomerDto = { IdToken, Email, Name, ProfilePhotoUrl };
+            const customerData: CreateCustomerDto = { IdToken, Email, Name, ProfilePhotoUrl, ClientDate };
             const result = await this.loginService.handleLogin(customerData, loginType);
 
             if (!result.success) {

@@ -1,5 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
-import { TokenResponse } from '../models/customer';
+import jwt from 'jsonwebtoken';
+import { TokenResponse } from '../models/auth';
 
 export class GoogleAuthService {
     private client: OAuth2Client;
@@ -35,25 +36,25 @@ export class GoogleAuthService {
         }
     }
 
-    async refreshAccessToken(refreshToken: string): Promise<TokenResponse | null> {
-        try {
-            this.client.setCredentials({
-                refresh_token: refreshToken
-            });
+    async generateJwtToken(payload: object): Promise<string> {
+        const secretKey = process.env.JWT_SECRET || 'your_jwt_secret';
+        return jwt.sign(payload, secretKey);
+    }
 
-            const { credentials } = await this.client.refreshAccessToken();
-            
-            if (!credentials.access_token) {
-                return null;
-            }
+    async refreshAccessToken(customerId: string, email: string): Promise<TokenResponse | null> {
+        try {
+            // JWT token oluştur
+            const payload = {
+                userId: customerId, // customerId'yi payload'a ekle
+                email: email, // Kullanıcının e-posta adresi
+            };
+            const jwtToken = await this.generateJwtToken(payload);
 
             return {
-                accessToken: credentials.access_token,
-                refreshToken: credentials.refresh_token || refreshToken,
-                expiresIn: credentials.expiry_date ? Math.floor((credentials.expiry_date - Date.now()) / 1000) : 3600
+                refreshToken: jwtToken
             };
         } catch (error) {
-            console.error('Refresh token hatası:', error);
+            console.error('JWT token oluşturma hatası:', error);
             return null;
         }
     }

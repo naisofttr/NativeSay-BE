@@ -20,28 +20,15 @@ export class Customer {
     @Column({ nullable: true })
     refreshTokenExpiryDate?: Date;
 
-    @CreateDateColumn()
-    createdAt!: Date;
+    @CreateDateColumn({ nullable: true })
+    createdAt?: Date | null;
 
-    @UpdateDateColumn()
-    updatedAt!: Date;
-}
-
-export interface CreateCustomerDto {
-    IdToken: string;
-    Email: string;
-    Name: string;
-    ProfilePhotoUrl?: string;
+    @UpdateDateColumn({ nullable: true })
+    updatedAt?: Date | null;
 }
 
 export interface CreatedCustomerResponse {
     success: boolean;
     data?: Customer;
     errorMessage?: string;
-}
-
-export interface TokenResponse {
-    accessToken: string;
-    refreshToken: string;
-    expiresIn: number;
 } 

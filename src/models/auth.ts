@@ -1,7 +1,6 @@
 export interface TokenResponse {
-    accessToken: string;
     refreshToken: string;
-    expiresIn: number;
+    expireDate?: number;
 }
 
 export interface RefreshTokenRequest {

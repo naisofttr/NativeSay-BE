@@ -1,6 +1,8 @@
-import { Customer, CreateCustomerDto, CreatedCustomerResponse } from '../models/customer';
+import { Customer, CreatedCustomerResponse } from '../models/customer';
+import { CreateCustomerDto } from '../dtos/createCustomerDto';
 import { GoogleAuthService } from './googleAuthService';
 import { AppDataSource } from '../config/database';
+import { v4 as uuidv4 } from 'uuid';
 
 export class LoginWithGoogleService {
     private customerRepository = AppDataSource.getRepository(Customer);
@@ -25,35 +27,44 @@ export class LoginWithGoogleService {
                 };
             }
 
-            // Refresh token işlemleri
-            // const tokenInfo = await this.googleAuthService.refreshAccessToken(customerData.IdToken);
-            // if (!tokenInfo) {
-            //     return {
-            //         success: false,
-            //         errorMessage: 'Refresh token alınamadı'
-            //     };
-            // }
-
             // Email'e göre mevcut müşteriyi kontrol et
             let customer = await this.customerRepository.findOne({
                 where: { email: customerData.Email }
             });
 
+            // customerId oluştur
+            const customerId = customer ? customer.id : uuidv4();
+
+            // Refresh token işlemleri
+            const tokenInfo = await this.googleAuthService.refreshAccessToken(customerId.toString(), customerData.Email);
+            if (!tokenInfo) {
+                return {
+                    success: false,
+                    errorMessage: 'Refresh token alınamadı'
+                };
+            }
+
+            // clientDate'e 100 gün ekle
+            const clientDate = new Date(customerData.ClientDate);
+            const refreshTokenExpiryDate = new Date(clientDate);
+            refreshTokenExpiryDate.setDate(refreshTokenExpiryDate.getDate() + 100);
+
             if (customer) {
                 // Müşteri varsa bilgilerini güncelle
                 customer.name = customerData.Name;
                 customer.profilePhotoUrl = customerData.ProfilePhotoUrl;
-                //customer.refreshToken = tokenInfo.refreshToken;
-                customer.updatedAt = new Date();
+                customer.refreshToken = tokenInfo.refreshToken;
+                customer.refreshTokenExpiryDate = refreshTokenExpiryDate;
+                customer.updatedAt = clientDate;
             } else {
                 // Yeni müşteri oluştur
                 customer = this.customerRepository.create({
                     email: customerData.Email,
                     name: customerData.Name,
                     profilePhotoUrl: customerData.ProfilePhotoUrl,
-                    //refreshToken: tokenInfo.refreshToken,
-                    createdAt: new Date(),
-                    updatedAt: new Date()
+                    refreshToken: tokenInfo.refreshToken,
+                    refreshTokenExpiryDate: refreshTokenExpiryDate,
+                    createdAt: clientDate
                 });
             }
 
