@@ -1,15 +1,20 @@
-import { Customer, CreatedCustomerResponse } from '../models/customer';
-import { CreateCustomerDto } from '../dtos/createCustomerDto';
+import { CreatedCustomerResponse, Customer } from '../../models/customer';
+import { CreateCustomerDto } from '../../dtos/createCustomerDto';
 import { GoogleAuthService } from './googleAuthService';
-import { AppDataSource } from '../config/database';
-import { v4 as uuidv4 } from 'uuid';
+import { CreateCustomerService } from '../CustomerServices/Commands/createCustomerService';
+import { UpdateCustomerService } from '../CustomerServices/Commands/updateCustomerService';
+import { AppDataSource } from '../../config/database';
 
 export class LoginWithGoogleService {
-    private customerRepository = AppDataSource.getRepository(Customer);
     private googleAuthService: GoogleAuthService;
+    private createCustomerService: CreateCustomerService;
+    private updateCustomerService: UpdateCustomerService;
+    private customerRepository = AppDataSource.getRepository(Customer);
 
     constructor() {
         this.googleAuthService = new GoogleAuthService();
+        this.createCustomerService = new CreateCustomerService();
+        this.updateCustomerService = new UpdateCustomerService();
     }
 
     private async validateGoogleToken(idToken: string): Promise<boolean> {
@@ -32,11 +37,8 @@ export class LoginWithGoogleService {
                 where: { email: customerData.Email }
             });
 
-            // customerId oluştur
-            const customerId = customer ? customer.id : uuidv4();
-
             // Refresh token işlemleri
-            const tokenInfo = await this.googleAuthService.refreshAccessToken(customerId.toString(), customerData.Email);
+            const tokenInfo = await this.googleAuthService.refreshAccessToken(customerData.Email);
             if (!tokenInfo) {
                 return {
                     success: false,
@@ -51,29 +53,29 @@ export class LoginWithGoogleService {
 
             if (customer) {
                 // Müşteri varsa bilgilerini güncelle
-                customer.name = customerData.Name;
-                customer.profilePhotoUrl = customerData.ProfilePhotoUrl;
-                customer.refreshToken = tokenInfo.refreshToken;
-                customer.refreshTokenExpiryDate = refreshTokenExpiryDate;
-                customer.updatedAt = clientDate;
+                customer = await this.updateCustomerService.updateCustomer(customer, {
+                    name: customerData.Name,
+                    profilePhotoUrl: customerData.ProfilePhotoUrl,
+                    refreshToken: tokenInfo.refreshToken,
+                    refreshTokenExpiryDate: refreshTokenExpiryDate,
+                    updatedAt: clientDate
+                });
             } else {
                 // Yeni müşteri oluştur
-                customer = this.customerRepository.create({
+                customer = await this.createCustomerService.createCustomer({
                     email: customerData.Email,
                     name: customerData.Name,
                     profilePhotoUrl: customerData.ProfilePhotoUrl,
                     refreshToken: tokenInfo.refreshToken,
                     refreshTokenExpiryDate: refreshTokenExpiryDate,
-                    createdAt: clientDate
+                    createdAt: clientDate,
+                    updatedAt: null
                 });
             }
 
-            // Müşteriyi kaydet ve sonucu döndür
-            const savedCustomer = await this.customerRepository.save(customer);
-
             return {
                 success: true,
-                data: savedCustomer
+                data: customer
             };
         } catch (error) {
             // Hata durumunda uygun mesajı döndür

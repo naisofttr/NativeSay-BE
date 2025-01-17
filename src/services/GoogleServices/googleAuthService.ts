@@ -1,6 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
-import { TokenResponse } from '../models/auth';
+import { TokenResponse } from '../../models/auth';
 
 export class GoogleAuthService {
     private client: OAuth2Client;
@@ -41,11 +41,10 @@ export class GoogleAuthService {
         return jwt.sign(payload, secretKey);
     }
 
-    async refreshAccessToken(customerId: string, email: string): Promise<TokenResponse | null> {
+    async refreshAccessToken(email: string): Promise<TokenResponse | null> {
         try {
             // JWT token oluştur
             const payload = {
-                userId: customerId, // customerId'yi payload'a ekle
                 email: email, // Kullanıcının e-posta adresi
             };
             const jwtToken = await this.generateJwtToken(payload);

@@ -1,7 +1,7 @@
 import { CreatedCustomerResponse } from '../models/customer';
 import { CreateCustomerDto } from '../dtos/createCustomerDto';
-import { LoginWithGoogleService } from './loginWithGoogleService';
-import { LoginWithAppleService } from './loginWithAppleService';
+import { LoginWithGoogleService } from './GoogleServices/loginWithGoogleService';
+import { LoginWithAppleService } from './AppleServices/loginWithAppleService';
 import { LoginType } from '../enums/loginType';
 import { AppleTokenRequest } from '../models/auth';
 

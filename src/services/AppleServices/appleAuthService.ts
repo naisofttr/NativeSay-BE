@@ -1,5 +1,5 @@
 import appleSignin from 'apple-signin-auth';
-import { AppleAuthResponse, AppleTokenRequest, TokenResponse } from '../models/auth';
+import { AppleAuthResponse, AppleTokenRequest, TokenResponse } from '../../models/auth';
 
 export class AppleAuthService {
     private clientId: string;

@@ -1,8 +1,7 @@
-import { CreatedCustomerResponse } from '../models/customer';
-import { AppDataSource } from '../config/database';
-import { AppleAuthService } from './appleAuthService';
-import { AppleTokenRequest } from '../models/auth';
-import { Customer } from '../models/customer';
+import { AppDataSource } from "../../config/database";
+import { AppleTokenRequest } from "../../models/auth";
+import { Customer, CreatedCustomerResponse } from "../../models/customer";
+import { AppleAuthService } from "./appleAuthService";
 
 export class LoginWithAppleService {
     private customerRepository = AppDataSource.getRepository(Customer);

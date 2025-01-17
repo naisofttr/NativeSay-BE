@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PromptRequest, PromptResponse, ChatGPTResponse } from '../models/prompt';
+import { ChatGPTResponse, PromptRequest, PromptResponse } from '../../models/prompt';
 
 export class PromptService {
     private apiKey: string;
