@@ -5,6 +5,6 @@ import { verifyRefreshTokenMiddleware } from '../middleware/authMiddleware';
 const router = express.Router();
 const promptController = new PromptController();
 
-router.post('/propmt/getPrompt', verifyRefreshTokenMiddleware, (req, res) => promptController.getPrompt(req, res));
+router.post('/prompt/getPrompt', verifyRefreshTokenMiddleware, (req, res) => promptController.getPrompt(req, res));
 
 export default router; 
