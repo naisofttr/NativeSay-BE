@@ -55,7 +55,7 @@ export class GetPromptService {
 
                 // CreatePromptCommand ile veritabanına kayıt yap
                 await this.createPromptCommand.execute({
-                    customerId: request.customerId, // Assuming customerId is part of the request
+                    customerId: request.customerId,
                     text: request.prompt,
                     languageCode: request.languageCode,
                     servicePromptResponse: servicePromptResponse
