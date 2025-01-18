@@ -1,24 +1,21 @@
-export interface PromptRequest {
-    prompt: string;
-    languageCode: string;
-}
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Customer } from './customer';
 
-export interface PromptResponse {
-    message: string;
-    error?: string;
-}
+@Entity('prompts')
+export class Prompt {
+    @PrimaryGeneratedColumn()
+    id!: number;
 
-interface ChatGPTMessage {
-    role: string;
-    content: string;
-}
+    @Column()
+    customerId!: number;
 
-interface ChatGPTChoice {
-    message: {
-        content: string;
-    };
-}
+    @Column()
+    text!: string;
 
-export interface ChatGPTResponse {
-    choices: ChatGPTChoice[];
-} 
+    @Column()
+    languageCode!: string;
+
+    @ManyToOne(() => Customer)
+    @JoinColumn({ name: 'customerId' })
+    customer!: Customer;
+}

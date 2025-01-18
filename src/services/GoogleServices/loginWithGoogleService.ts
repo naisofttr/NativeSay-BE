@@ -1,5 +1,5 @@
 import { CreatedCustomerResponse, Customer } from '../../models/customer';
-import { CreateCustomerDto } from '../../dtos/createCustomerDto';
+import { CreateCustomerDto } from '../../dtos/Customer/createCustomerDto';
 import { GoogleAuthService } from './googleAuthService';
 import { CreateCustomerService } from '../CustomerServices/Commands/createCustomerService';
 import { UpdateCustomerService } from '../CustomerServices/Commands/updateCustomerService';

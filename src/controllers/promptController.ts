@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { PromptRequest } from '../models/prompt';
 import { PromptService } from '../services/Prompt/promptService';
+import { PromptRequest } from '../dtos/Prompt/PromptRequestDto';
 
 export class PromptController {
     private promptService: PromptService;
