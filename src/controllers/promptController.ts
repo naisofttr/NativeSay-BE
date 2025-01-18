@@ -13,7 +13,8 @@ export class PromptController {
         try {
             const promptRequest: PromptRequest = {
                 prompt: req.body.prompt,
-                languageCode: req.body.languageCode
+                languageCode: req.body.languageCode,
+                customerId: req.body.customerId
             };
 
             if (!promptRequest.prompt || !promptRequest.languageCode) {

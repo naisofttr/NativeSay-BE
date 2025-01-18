@@ -15,6 +15,9 @@ export class Prompt {
     @Column({ length: 50 })
     languageCode!: string;
 
+    @Column()
+    servicePromptResponse!: string;
+
     @ManyToOne(() => Customer)
     @JoinColumn({ name: 'customerId' })
     customer!: Customer;
