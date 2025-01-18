@@ -12,7 +12,7 @@ export class Prompt {
     @Column()
     text!: string;
 
-    @Column()
+    @Column({ length: 50 })
     languageCode!: string;
 
     @ManyToOne(() => Customer)
