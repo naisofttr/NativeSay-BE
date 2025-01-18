@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { PromptService } from '../services/Prompt/promptService';
+import { GetPromptService } from '../services/Prompt/Queries/GetPromptService';
 import { PromptRequest } from '../dtos/Prompt/PromptRequestDto';
 
 export class PromptController {
-    private promptService: PromptService;
+    private promptService: GetPromptService;
 
     constructor() {
-        this.promptService = new PromptService();
+        this.promptService = new GetPromptService();
     }
 
     async getPrompt(req: Request, res: Response) {
