@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
 import { GetPromptService } from '../services/Prompt/Queries/GetPromptService';
 import { PromptRequest } from '../dtos/Prompt/PromptRequestDto';
-import { DeletePromptByIdCommand } from '../services/Prompt/Commands/DeletePromptByIdCommand';
+import { DeletePromptByServicePromptResponseCommand } from '../services/Prompt/Commands/DeletePromptByServicePromptResponseCommand';
 
 export class PromptController {
     private promptService: GetPromptService;
-    private deletePromptCommand: DeletePromptByIdCommand;
+    private deletePromptCommand: DeletePromptByServicePromptResponseCommand;
 
     constructor() {
         this.promptService = new GetPromptService();
-        this.deletePromptCommand = new DeletePromptByIdCommand();
+        this.deletePromptCommand = new DeletePromptByServicePromptResponseCommand();
     }
 
     async getPrompt(req: Request, res: Response) {
@@ -49,23 +49,23 @@ export class PromptController {
         }
     }
 
-    async deletePromptById(req: Request, res: Response) {
+    async deletePromptByServicePromptResponse(req: Request, res: Response) {
         try {
-            const { id } = req.params;
+            const { servicePromptResponse } = req.body;
 
-            if (!id) {
+            if (!servicePromptResponse) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Prompt ID zorunludur'
+                    message: 'servicePromptResponse parametresi zorunludur'
                 });
             }
 
-            const isDeleted = await this.deletePromptCommand.execute(id);
+            const isDeleted = await this.deletePromptCommand.execute(servicePromptResponse);
 
             if (!isDeleted) {
                 return res.status(404).json({
                     success: false,
-                    message: 'Prompt bulunamadı'
+                    message: 'Silinecek prompt bulunamadı'
                 });
             }
 
