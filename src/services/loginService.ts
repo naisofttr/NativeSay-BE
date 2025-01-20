@@ -20,14 +20,7 @@ export class LoginService {
                 return await this.loginWithGoogleService.loginWithGoogle(customerData);
 
             case LoginType.APPLE:
-                const appleData: AppleTokenRequest = {
-                    code: customerData.IdToken, // Assuming IdToken is used as the code for Apple
-                    name: {
-                        firstName: customerData.Name.split(' ')[0],
-                        lastName: customerData.Name.split(' ')[1] || ''
-                    }
-                };
-                return await this.loginWithAppleService.loginWithApple(appleData);
+                return await this.loginWithAppleService.loginWithApple(customerData);
 
             case LoginType.EMAIL:
                 // Şimdilik EMAIL için bir işlem yapmıyoruz

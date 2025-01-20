@@ -1,5 +1,6 @@
 import appleSignin from 'apple-signin-auth';
 import { AppleAuthResponse, AppleTokenRequest, TokenResponse } from '../../models/auth';
+import { CreateCustomerDto } from '../../dtos/Customer/createCustomerDto';
 
 export class AppleAuthService {
     private clientId: string;
@@ -18,14 +19,14 @@ export class AppleAuthService {
         }
     }
 
-    async verifyAppleToken(request: AppleTokenRequest): Promise<AppleAuthResponse | null> {
+    async verifyAppleToken(request: CreateCustomerDto): Promise<AppleAuthResponse | null> {
         try {
             const redirectUri = process.env.APPLE_REDIRECT_URI;
             if (!redirectUri) {
                 throw new Error('APPLE_REDIRECT_URI is not defined');
             }
 
-            const tokenResponse = await appleSignin.getAuthorizationToken(request.code, {
+            const tokenResponse = await appleSignin.getAuthorizationToken(request.IdToken, {
                 clientID: this.clientId,
                 clientSecret: this.generateClientSecret(),
                 redirectUri: redirectUri,
@@ -39,8 +40,7 @@ export class AppleAuthService {
 
             return {
                 id: data.sub,
-                email: data.email,
-                name: request.name // Apple ilk girişte isim bilgisini gönderir
+                email: data.email
             };
         } catch (error) {
             console.error('Apple token doğrulama hatası:', error);
