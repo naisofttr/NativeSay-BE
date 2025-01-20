@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import { Customer } from '../models/customer';
+import { Prompt } from '../models/prompt';
 import { join } from 'path';
 
 export const AppDataSource = new DataSource({
@@ -11,10 +12,11 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_DATABASE,
     synchronize: true,
     logging: false,
-    entities: [join(__dirname, '..', 'models', '*.{ts,js}')],
+    entities: [Customer, Prompt],
     options: {
         encrypt: true,
-        trustServerCertificate: true
+        trustServerCertificate: true,
+        connectTimeout: 30000
     },
     extra: {
         validateConnection: false,
