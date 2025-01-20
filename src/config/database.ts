@@ -1,0 +1,36 @@
+import { DataSource } from 'typeorm';
+import { Customer } from '../models/customer';
+import { Prompt } from '../models/prompt';
+import { join } from 'path';
+
+export const AppDataSource = new DataSource({
+    type: 'mssql',
+    host: process.env.DB_SERVER,
+    port: parseInt(process.env.DB_PORT || '10079'),
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    synchronize: true,
+    logging: false,
+    entities: [Customer, Prompt],
+    options: {
+        encrypt: true,
+        trustServerCertificate: true,
+        connectTimeout: 30000
+    },
+    extra: {
+        validateConnection: false,
+        trustServerCertificate: true
+    }
+});
+
+export const initializeDatabase = async () => {
+    try {
+        await AppDataSource.initialize();
+        console.log('Veritabanı bağlantısı başarılı');
+        return true;
+    } catch (error) {
+        console.error('Veritabanı bağlantı hatası:', error);
+        return false;
+    }
+};
