@@ -1,54 +1,33 @@
-import { AppDataSource } from "../../config/database";
-import { AppleTokenRequest } from "../../models/auth";
-import { Customer, CreatedCustomerResponse } from "../../models/customer";
+import { CreateCustomerDto } from "../../dtos/Customer/createCustomerDto";
+import { CreatedCustomerResponse } from "../../models/customer";
+import { CustomerService } from "../CustomerServices/customerService";
 import { AppleAuthService } from "./appleAuthService";
 
 export class LoginWithAppleService {
-    private customerRepository = AppDataSource.getRepository(Customer);
     private appleAuthService: AppleAuthService;
+    private customerService: CustomerService;
 
     constructor() {
         this.appleAuthService = new AppleAuthService();
+        this.customerService = new CustomerService();
     }
 
-    async loginWithApple(appleData: AppleTokenRequest): Promise<CreatedCustomerResponse> {
+    async loginWithApple(customerData: CreateCustomerDto): Promise<CreatedCustomerResponse> {
         try {
-            const appleUser = await this.appleAuthService.verifyAppleToken(appleData);
-            if (!appleUser) {
+            const appleUser = await this.appleAuthService.verifyAppleToken(customerData);
+            if (!appleUser || !appleUser.email || !customerData.Name) {
                 return {
                     success: false,
-                    errorMessage: 'Geçersiz Apple token'
+                    errorMessage: 'Gerekli bilgiler eksik'
                 };
             }
 
-            let customer = await this.customerRepository.findOne({
-                where: { email: appleUser.email }
-            });
-
-            if (customer) {
-                // Müşteri varsa bilgilerini güncelle
-                if (appleUser.name) {
-                    customer.name = `${appleUser.name.firstName} ${appleUser.name.lastName}`.trim();
-                }
-                customer.updatedAt = new Date();
-            } else {
-                // Yeni müşteri oluştur
-                customer = this.customerRepository.create({
-                    email: appleUser.email,
-                    name: appleUser.name ? 
-                        `${appleUser.name.firstName} ${appleUser.name.lastName}`.trim() : 
-                        appleUser.email.split('@')[0],
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                });
-            }
-
-            const savedCustomer = await this.customerRepository.save(customer);
-
-            return {
-                success: true,
-                data: savedCustomer
-            };
+            return await this.customerService.handleCustomerService(
+                appleUser.email,
+                customerData.Name,
+                customerData.ProfilePhotoUrl || '', 
+                new Date(customerData.ClientDate)
+            );
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';
             return {
