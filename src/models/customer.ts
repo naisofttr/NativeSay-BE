@@ -5,25 +5,25 @@ export class Customer {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ unique: true })
+    @Column({ type: 'varchar', unique: true })
     email!: string;
 
-    @Column()
+    @Column({ type: 'varchar' })
     name!: string;
 
-    @Column({ nullable: true, type: 'varchar', default: null })
+    @Column({ type: 'varchar', nullable: true, default: null })
     profilePhotoUrl?: string | null;
 
-    @Column({ nullable: true })
+    @Column({ type: 'varchar', nullable: true })
     refreshToken?: string;
 
-    @Column({ nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     refreshTokenExpiryDate?: Date;
 
-    @CreateDateColumn({ nullable: true })
+    @CreateDateColumn({ type: 'timestamp', nullable: true })
     createdAt?: Date | null;
 
-    @UpdateDateColumn({ nullable: true })
+    @UpdateDateColumn({ type: 'timestamp', nullable: true })
     updatedAt?: Date | null;
 }
 
@@ -31,4 +31,4 @@ export interface CreatedCustomerResponse {
     success: boolean;
     data?: Customer;
     errorMessage?: string;
-} 
+}
