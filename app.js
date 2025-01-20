@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const { PromptController } = require('./src/controllers/promptController');
 const { AuthController } = require('./src/controllers/authController');
+const { initializeDatabase } = require('./src/config/database');
 
 // Creating express object
 const app = express();
@@ -14,6 +15,17 @@ const authController = new AuthController();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Initialize Database
+initializeDatabase().then((success) => {
+    if (!success) {
+        console.error('Veritabanı başlatılamadı!');
+        process.exit(1);
+    }
+}).catch((error) => {
+    console.error('Veritabanı başlatma hatası:', error);
+    process.exit(1);
+});
 
 // Routes
 app.get('/', (req, res) => { 
