@@ -16,8 +16,7 @@ export class PromptController {
         try {
             const promptRequest: PromptRequest = {
                 prompt: req.body.prompt,
-                languageCode: req.body.languageCode,
-                customerId: req.body.customerId
+                languageCode: req.body.languageCode
             };
 
             if (!promptRequest.prompt || !promptRequest.languageCode) {
@@ -27,7 +26,7 @@ export class PromptController {
                 });
             }
 
-            const response = await this.promptService.getPromptResponse(promptRequest);
+            const response = await this.promptService.getPromptResponse(promptRequest, req);
 
             if (response.error) {
                 return res.status(500).json({

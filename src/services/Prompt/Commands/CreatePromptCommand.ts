@@ -6,7 +6,11 @@ export class CreatePromptCommand {
     private promptRepository = AppDataSource.getRepository(Prompt);
 
     async execute(createPromptDto: CreatePromptDto): Promise<Prompt> {
-        const prompt = this.promptRepository.create(createPromptDto);
+        const promptData = {
+            ...createPromptDto,
+            customerId: createPromptDto.customerId
+        };
+        const prompt = this.promptRepository.create(promptData);
         return await this.promptRepository.save(prompt);
     }
 } 

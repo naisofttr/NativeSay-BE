@@ -1,4 +1,5 @@
 export interface CreateCustomerDto {
+    Id?: string;
     IdToken: string;
     Email: string;
     Name: string;

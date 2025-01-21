@@ -20,8 +20,11 @@ export class CustomerService {
                 where: { email }
             });
 
+            const { v4: uuidv4 } = require('uuid');
+            const id = uuidv4();
+
             // Refresh token işlemleri
-            const tokenInfo = await refreshAccessToken(email);
+            const tokenInfo = await refreshAccessToken(id, email);
             if (!tokenInfo) {
                 return {
                     success: false,
@@ -45,6 +48,7 @@ export class CustomerService {
             } else {
                 // Yeni müşteri oluştur
                 customer = await this.createCustomerService.createCustomer({
+                    id,
                     email,
                     name,
                     profilePhotoUrl,
@@ -68,3 +72,7 @@ export class CustomerService {
         }
     }
 }
+function uuidv4() {
+    throw new Error("Function not implemented.");
+}
+

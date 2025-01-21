@@ -1,5 +1,5 @@
 export interface CreatePromptDto {
-    customerId: number;
+    customerId: string;
     text: string;
     languageCode: string;
     servicePromptResponse: string;

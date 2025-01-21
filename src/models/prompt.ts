@@ -6,8 +6,8 @@ export class Prompt {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ type: 'integer' })
-    customerId!: number;
+    @Column({ type: 'string' })
+    customerId!: string;
 
     @Column({ type: 'text' })
     text!: string;

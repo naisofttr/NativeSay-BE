@@ -30,7 +30,7 @@ export class LoginWithGoogleService {
             return await this.customerService.handleCustomerService(
                 customerData.Email,
                 customerData.Name,
-                customerData.ProfilePhotoUrl || '', 
+                (customerData.ProfilePhotoUrl || '') as string,
                 new Date(customerData.ClientDate)
             );
         } catch (error) {
