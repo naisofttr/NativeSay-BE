@@ -26,7 +26,8 @@ export class LoginWithAppleService {
                 appleUser.email,
                 customerData.Name,
                 customerData.ProfilePhotoUrl || '', 
-                new Date(customerData.ClientDate)
+                new Date(customerData.ClientDate),
+                customerData.MembershipType
             );
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';

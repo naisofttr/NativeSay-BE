@@ -3,6 +3,7 @@ import { Customer, CreatedCustomerResponse } from "../../models/customer";
 import { CreateCustomerService } from "./Commands/createCustomerService";
 import { UpdateCustomerService } from "./Commands/updateCustomerService";
 import { refreshAccessToken } from "../JwtTokenServices/refreshAccessToken";
+import { MembershipType } from "../../enums/MembershipType";
 
 export class CustomerService {
     private customerRepository = AppDataSource.getRepository(Customer);
@@ -14,7 +15,13 @@ export class CustomerService {
         this.updateCustomerService = new UpdateCustomerService();
     }
 
-    async handleCustomerService(email: string, name: string, profilePhotoUrl: string, clientDate: Date): Promise<CreatedCustomerResponse> {
+    async handleCustomerService(
+        email: string, 
+        name: string, 
+        profilePhotoUrl: string, 
+        clientDate: Date,
+        membershipType: MembershipType = MembershipType.FREE
+    ): Promise<CreatedCustomerResponse> {
         try {
             let customer = await this.customerRepository.findOne({
                 where: { email }
@@ -43,6 +50,7 @@ export class CustomerService {
                     profilePhotoUrl,
                     refreshToken: tokenInfo.refreshToken,
                     refreshTokenExpiryDate,
+                    membershipType,
                     updatedAt: clientDate
                 });
             } else {
@@ -54,6 +62,7 @@ export class CustomerService {
                     profilePhotoUrl,
                     refreshToken: tokenInfo.refreshToken,
                     refreshTokenExpiryDate,
+                    membershipType,
                     createdAt: clientDate,
                     updatedAt: null
                 });
@@ -72,4 +81,3 @@ export class CustomerService {
         }
     }
 }
-

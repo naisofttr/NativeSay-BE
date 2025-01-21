@@ -31,7 +31,8 @@ export class LoginWithGoogleService {
                 customerData.Email,
                 customerData.Name,
                 (customerData.ProfilePhotoUrl || '') as string,
-                new Date(customerData.ClientDate)
+                new Date(customerData.ClientDate),
+                customerData.MembershipType
             );
         } catch (error) {
             // Hata durumunda uygun mesajı döndür

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { LoginService } from '../services/loginService';
 import { CreateCustomerDto } from '../dtos/Customer/createCustomerDto';
+import { MembershipType } from '../enums/MembershipType';
 
 export class AuthController {
     private loginService: LoginService;
@@ -11,7 +12,7 @@ export class AuthController {
 
     async login(req: Request, res: Response) {
         try {
-            const { IdToken, ClientDate, Email, Name, ProfilePhotoUrl, LoginType: loginType } = req.body;
+            const { IdToken, ClientDate, Email, Name, ProfilePhotoUrl, LoginType: loginType, MembershipType: membershipType } = req.body;
 
             if (!IdToken || !ClientDate || !Email || !Name || !loginType) {
                 return res.status(400).json({
@@ -20,7 +21,14 @@ export class AuthController {
                 });
             }
 
-            const customerData: CreateCustomerDto = { IdToken, Email, Name, ProfilePhotoUrl, ClientDate };
+            const customerData: CreateCustomerDto = { 
+                IdToken, 
+                Email, 
+                Name, 
+                ProfilePhotoUrl, 
+                ClientDate,
+                MembershipType: membershipType || MembershipType.FREE 
+            };
             const result = await this.loginService.handleLogin(customerData, loginType);
 
             if (!result.success) {

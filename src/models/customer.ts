@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { MembershipType } from '../enums/MembershipType';
 
 @Entity('customers')
 export class Customer {
@@ -19,6 +20,13 @@ export class Customer {
 
     @Column({ type: 'timestamp', nullable: true })
     refreshTokenExpiryDate?: Date;
+
+    @Column({ 
+        type: 'enum',
+        enum: MembershipType,
+        default: MembershipType.FREE 
+    })
+    membershipType!: MembershipType;
 
     @CreateDateColumn({ type: 'timestamp', nullable: true })
     createdAt?: Date | null;
