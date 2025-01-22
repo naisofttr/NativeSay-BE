@@ -1,4 +1,4 @@
-import { CreatedCustomerResponse, Customer } from '../../models/customer';
+import { CreatedCustomerResponse } from '../../models/customer';
 import { CreateCustomerDto } from '../../dtos/Customer/createCustomerDto';
 import { GoogleAuthService } from './googleAuthService';
 import { CustomerService } from '../CustomerServices/customerService';
