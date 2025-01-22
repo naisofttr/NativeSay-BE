@@ -3,8 +3,8 @@ import { Customer } from './customer';
 
 @Entity('prompts')
 export class Prompt {
-    @PrimaryGeneratedColumn()
-    id!: number;
+    @PrimaryGeneratedColumn('uuid')
+    id!: string;
 
     @Column({ type: 'string' })
     customerId!: string;
