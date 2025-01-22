@@ -18,7 +18,7 @@ export class LoginWithAppleService {
             if (!appleUser || !appleUser.email || !customerData.Name) {
                 return {
                     success: false,
-                    errorMessage: 'Gerekli bilgiler eksik'
+                    errorMessage: 'Geçersiz Apple Token'
                 };
             }
 
