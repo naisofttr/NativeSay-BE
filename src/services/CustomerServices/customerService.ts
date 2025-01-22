@@ -16,9 +16,9 @@ export class CustomerService {
     }
 
     async handleCustomerService(
-        email: string, 
-        name: string, 
-        profilePhotoUrl: string, 
+        email: string,
+        name: string,
+        profilePhotoUrl: string,
         clientDate: Date,
         membershipType: MembershipType = MembershipType.FREE
     ): Promise<CreatedCustomerResponse> {
@@ -28,7 +28,11 @@ export class CustomerService {
             });
 
             const { v4: uuidv4 } = require('uuid');
-            const id = uuidv4();
+            let id = uuidv4();
+
+            if (customer) {
+                id = customer.id;
+            }
 
             // Refresh token işlemleri
             const tokenInfo = await refreshAccessToken(id, email);
