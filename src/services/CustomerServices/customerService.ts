@@ -55,8 +55,8 @@ export class CustomerService {
                 refreshToken: tokenInfo.refreshToken,
                 refreshTokenExpiryDate,
                 membershipType,
-                createdAt: customer ? customer.createdAt : clientDate,
-                updatedAt: customer ? clientDate : null
+                createdAt: customer?.createdAt || clientDate,
+                updatedAt: clientDate
             };
 
             // Firebase'e kaydet
