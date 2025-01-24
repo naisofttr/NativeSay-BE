@@ -1,44 +1,57 @@
 import 'reflect-metadata';
 import 'dotenv/config';
-import express from 'express';
-import { AppDataSource } from './config/typeorm.config';
-import promptRoutes from './routes/promptRoutes';
-import authRoutes from './routes/authRoutes';
-import customerRoutes from './routes/customerRoutes';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import { PromptController } from './controllers/promptController';
+import { AuthController } from './controllers/authController';
+import { CustomerController } from './controllers/customerController';
+import { initializeDatabase } from './config/database';
 
+// Creating express app
 const app = express();
-const PORT = process.env.PORT || 3000;
 
+// Controllers
+const promptController = new PromptController();
+const authController = new AuthController();
+const customerController = new CustomerController();
+
+// Middleware
+app.use(cors());
 app.use(express.json());
-app.use('/api', authRoutes);
-app.use('/api', promptRoutes);
-app.use('/api', customerRoutes);
 
-// Veritabanı bağlantısını başlat
-AppDataSource.initialize()
+// Initialize Database
+initializeDatabase()
     .then(() => {
-        console.log('Veritabanı bağlantısı başarılı');
-        
-        // Sunucuyu başlat
-        app.listen(PORT, () => {
-            console.log(`Sunucu ${PORT} portunda çalışıyor`);
-        });
+        console.log('Firebase bağlantısı başarılı');
     })
     .catch((error) => {
-        console.log('Veritabanı bağlantı hatası:', error);
-        console.log('Uygulama veritabanı olmadan devam ediyor...');
-        
-        // Hata olsa bile sunucuyu başlat
-        app.listen(PORT, () => {
-            console.log(`Sunucu ${PORT} portunda çalışıyor`);
-        });
+        console.error('Firebase başlatma hatası:', error);
+        console.log('Uygulama hata ile devam ediyor...');
     });
 
-// Health check endpoint'i
-app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'up',
-        timestamp: new Date(),
-        dbStatus: AppDataSource.isInitialized ? 'connected' : 'disconnected'
-    });
+// Routes
+app.get('/', (req: Request, res: Response) => {
+    res.json({ message: 'NativeSay API is running!' });
+});
+
+// Auth routes
+app.post('/api/auth/login', (req: Request, res: Response) => authController.login(req, res));
+
+// Prompt routes
+app.post('/api/prompt/getPrompt', (req: Request, res: Response) => promptController.getPrompt(req, res));
+app.post('/api/prompt/deletePromptByServicePromptResponse', (req: Request, res: Response) => promptController.deletePromptByServicePromptResponse(req, res));
+
+// Customer routes
+app.put('/api/customers/:id', (req: Request, res: Response) => customerController.updateCustomer(req, res));
+
+// Error handling middleware
+app.use((err: Error, req: Request, res: Response, next: express.NextFunction) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Bir şeyler ters gitti!' });
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Sunucu ${PORT} portunda çalışıyor`);
 });
