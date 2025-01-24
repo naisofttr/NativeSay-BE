@@ -1,5 +1,5 @@
 import { Customer } from '../../../models/customer';
-import { AppDataSource } from '../../../config/database';
+import { AppDataSource } from '../../../config/typeorm.config';
 
 export class CreateCustomerService {
     private customerRepository = AppDataSource.getRepository(Customer);

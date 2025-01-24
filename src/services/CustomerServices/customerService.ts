@@ -16,7 +16,7 @@ export class CustomerService {
         membershipType: MembershipType = MembershipType.FREE
     ): Promise<CreatedCustomerResponse> {
         try {
-            // Email'e göre müşteri ara
+            // Email'e göre customer ara
             const customerQuery = query(
                 ref(database, this.CUSTOMERS_REF),
                 orderByChild('email'),
