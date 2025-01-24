@@ -1,19 +1,12 @@
-import { AppDataSource } from "../../config/database";
+import { ref, get, set, query, orderByChild, equalTo } from 'firebase/database';
+import { database } from "../../config/database";
 import { Customer, CreatedCustomerResponse } from "../../models/customer";
-import { CreateCustomerService } from "./Commands/createCustomerService";
-import { UpdateCustomerService } from "./Commands/updateCustomerService";
 import { refreshAccessToken } from "../JwtTokenServices/refreshAccessToken";
 import { MembershipType } from "../../enums/MembershipType";
+import { v4 as uuidv4 } from 'uuid';
 
 export class CustomerService {
-    private customerRepository = AppDataSource.getRepository(Customer);
-    private createCustomerService: CreateCustomerService;
-    private updateCustomerService: UpdateCustomerService;
-
-    constructor() {
-        this.createCustomerService = new CreateCustomerService();
-        this.updateCustomerService = new UpdateCustomerService();
-    }
+    private readonly CUSTOMERS_REF = 'customers';
 
     async handleCustomerService(
         email: string,
@@ -23,15 +16,22 @@ export class CustomerService {
         membershipType: MembershipType = MembershipType.FREE
     ): Promise<CreatedCustomerResponse> {
         try {
-            let customer = await this.customerRepository.findOne({
-                where: { email }
-            });
-
-            const { v4: uuidv4 } = require('uuid');
+            // Email'e göre müşteri ara
+            const customerQuery = query(
+                ref(database, this.CUSTOMERS_REF),
+                orderByChild('email'),
+                equalTo(email)
+            );
+            
+            const snapshot = await get(customerQuery);
+            let customer: Customer | null = null;
             let id = uuidv4();
 
-            if (customer) {
-                id = customer.id;
+            if (snapshot.exists()) {
+                const customerData = snapshot.val();
+                const customerKey = Object.keys(customerData)[0];
+                customer = customerData[customerKey];
+                id = customer?.id || id;  
             }
 
             // Refresh token işlemleri
@@ -47,34 +47,25 @@ export class CustomerService {
             const refreshTokenExpiryDate = new Date(clientDate);
             refreshTokenExpiryDate.setDate(refreshTokenExpiryDate.getDate() + 100);
 
-            if (customer) {
-                // Müşteri varsa bilgilerini güncelle
-                customer = await this.updateCustomerService.updateCustomer(customer, {
-                    name,
-                    profilePhotoUrl,
-                    refreshToken: tokenInfo.refreshToken,
-                    refreshTokenExpiryDate,
-                    membershipType,
-                    updatedAt: clientDate
-                });
-            } else {
-                // Yeni müşteri oluştur
-                customer = await this.createCustomerService.createCustomer({
-                    id,
-                    email,
-                    name,
-                    profilePhotoUrl,
-                    refreshToken: tokenInfo.refreshToken,
-                    refreshTokenExpiryDate,
-                    membershipType,
-                    createdAt: clientDate,
-                    updatedAt: null
-                });
-            }
+            const customerData: Customer = {
+                id,
+                email,
+                name,
+                profilePhotoUrl,
+                refreshToken: tokenInfo.refreshToken,
+                refreshTokenExpiryDate,
+                membershipType,
+                createdAt: customer ? customer.createdAt : clientDate,
+                updatedAt: customer ? clientDate : null
+            };
+
+            // Firebase'e kaydet
+            const customerRef = ref(database, `${this.CUSTOMERS_REF}/${id}`);
+            await set(customerRef, customerData);
 
             return {
                 success: true,
-                data: customer
+                data: customerData
             };
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';

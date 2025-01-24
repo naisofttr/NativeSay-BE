@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import { join } from 'path';
 import 'dotenv/config';
 
-export default new DataSource({
+export const AppDataSource = new DataSource({
     // MSSQL Configuration
     // type: 'mssql',
     // host: process.env.DB_SERVER,

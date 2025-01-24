@@ -1,13 +1,10 @@
 import { Request, Response } from 'express';
 import { UpdateCustomerService } from '../services/CustomerServices/Commands/updateCustomerService';
 import { UpdateCustomerDto } from '../dtos/Customer/updateCustomerDto';
-import { AppDataSource } from '../config/database';
-import { Customer } from '../models/customer';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export class CustomerController {
     private updateCustomerService: UpdateCustomerService;
-    private customerRepository = AppDataSource.getRepository(Customer);
 
     constructor() {
         this.updateCustomerService = new UpdateCustomerService();
@@ -35,23 +32,14 @@ export class CustomerController {
                 });
             }
 
-            // Find customer
-            const customer = await this.customerRepository.findOne({
-                where: { id: customerId }
-            });
-
-            if (!customer) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Müşteri bulunamadı'
-                });
-            }
-
-            // Update customer
-            const updatedCustomer = await this.updateCustomerService.updateCustomer(customer, {
-                ...updateData,
-                updatedAt: updateData.clientDate ? new Date(updateData.clientDate) : new Date()
-            });
+            // Update customer using service
+            const updatedCustomer = await this.updateCustomerService.updateCustomer(
+                customerId,
+                {
+                    ...updateData,
+                    updatedAt: updateData.clientDate ? new Date(updateData.clientDate) : new Date()
+                }
+            );
 
             return res.status(200).json({
                 success: true,

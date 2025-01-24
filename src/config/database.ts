@@ -1,14 +1,16 @@
-import typeormConfig from './typeorm.config';
+import { initializeApp } from 'firebase/app';
+import { getDatabase } from 'firebase/database';
+import { firebaseConfig } from './firebase.config';
 
-export const AppDataSource = typeormConfig;
+export const firebaseApp = initializeApp(firebaseConfig);
+export const database = getDatabase(firebaseApp);
 
 export const initializeDatabase = async () => {
     try {
-        const connection = await AppDataSource.initialize();
-        console.log('Veritabanı bağlantısı başarılı');
-        return connection;
+        console.log('Firebase bağlantısı başarılı');
+        return database;
     } catch (error) {
-        console.error('Veritabanı bağlantı hatası:', error);
+        console.error('Firebase bağlantı hatası:', error);
         throw error;
     }
-};
+}

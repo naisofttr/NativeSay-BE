@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import 'dotenv/config';
 import express from 'express';
-import { AppDataSource } from './config/database';
+import { AppDataSource } from './config/typeorm.config';
 import promptRoutes from './routes/promptRoutes';
 import authRoutes from './routes/authRoutes';
 import customerRoutes from './routes/customerRoutes';
