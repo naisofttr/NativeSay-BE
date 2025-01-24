@@ -4,7 +4,7 @@
     "module": "commonjs",
     "lib": ["es6", "dom", "es2017"],
     "allowJs": true,
-    "outDir": "build",
+    "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "noImplicitAny": true,
@@ -17,5 +17,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "build"]
-} 
+  "exclude": ["node_modules", "dist"]
+}
