@@ -30,8 +30,8 @@ export class UpdateCustomerService {
             membershipType: data.membershipType,
             updatedAt: data.clientDate
         };
-
-        await update(customerRef, customer);
+        // dogru calismadigi icin gecici olarak update islemleri devre disi birakildi.
+        //await update(customerRef, customer);
         return customer;
     }
 }
