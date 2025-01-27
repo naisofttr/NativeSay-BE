@@ -28,7 +28,8 @@ export class GetPromptService {
             const existingPrompt = await this.getPromptQuery.execute(request.prompt, request.languageCode);
             if (existingPrompt) {
                 return {
-                    message: existingPrompt.servicePromptResponse
+                    message: existingPrompt.servicePromptResponse,
+                    confirmedCount: existingPrompt.confirmedCount || 1
                 };
             }
 
@@ -66,7 +67,8 @@ export class GetPromptService {
                 });
 
                 return {
-                    message: servicePromptResponse
+                    message: servicePromptResponse,
+                    confirmedCount: 1
                 };
             }
 
