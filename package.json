@@ -19,7 +19,8 @@
     "firebase": "^11.2.0",
     "firebase-admin": "^13.0.2",
     "google-auth-library": "^9.7.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
