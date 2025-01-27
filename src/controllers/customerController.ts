@@ -1,26 +1,21 @@
 import { Request, Response } from 'express';
 import { UpdateCustomerService } from '../services/CustomerServices/Commands/updateCustomerService';
 import { UpdateCustomerDto } from '../dtos/Customer/updateCustomerDto';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { extractCustomerIdFromToken } from '../utils/jwtUtils';
+import { GetCustomerPromptsQuery } from '../services/Prompt/Queries/GetCustomerPromptsQuery';
 
 export class CustomerController {
     private updateCustomerService: UpdateCustomerService;
+    private getCustomerPromptsQuery: GetCustomerPromptsQuery;
 
     constructor() {
         this.updateCustomerService = new UpdateCustomerService();
+        this.getCustomerPromptsQuery = new GetCustomerPromptsQuery();
     }
 
     async updateCustomer(req: Request, res: Response) {
         try {
-            const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                throw new Error('Authorization header geçersiz veya eksik');
-            }
-
-            const token = authHeader.split(' ')[1];
-            const secretKey = process.env.JWT_SECRET || 'your_jwt_secret';
-            const jwtDecode = jwt.verify(token, secretKey) as JwtPayload;
-            const customerId = jwtDecode.id;
+            const customerId = extractCustomerIdFromToken(req);
             
             const updateData: UpdateCustomerDto = req.body;
 
@@ -52,6 +47,20 @@ export class CustomerController {
             return res.status(500).json({
                 success: false,
                 message: `Müşteri güncellenirken bir hata oluştu: ${errorMessage}`
+            });
+        }
+    }
+
+    async getCustomerPrompts(req: Request, res: Response) {
+        try {
+            const customerId = extractCustomerIdFromToken(req);
+            const prompts = await this.getCustomerPromptsQuery.execute(customerId);
+            res.status(200).json(prompts);
+        } catch (error) {
+            console.error('Müşteri promptları getirme hatası:', error);
+            res.status(500).json({ 
+                error: 'Müşteri promptları getirilirken bir hata oluştu',
+                details: error instanceof Error ? error.message : 'Bilinmeyen hata'
             });
         }
     }

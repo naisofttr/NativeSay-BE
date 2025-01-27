@@ -5,7 +5,7 @@ import { PromptResponse } from '../../../dtos/Prompt/PromptResponseDto';
 import { GetPromptQuery } from './GetPromptQuery';
 import { CreatePromptCommand } from '../Commands/CreatePromptCommand';
 import { Request } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { extractCustomerIdFromToken } from '../../../utils/jwtUtils';
 
 export class GetPromptService {
     private apiKey: string;
@@ -22,15 +22,7 @@ export class GetPromptService {
 
     async getPromptResponse(request: PromptRequest, req: Request): Promise<PromptResponse> {
         try {
-            const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                throw new Error('Authorization header geçersiz veya eksik');
-            }
-
-            const token = authHeader.split(' ')[1];
-            const secretKey = process.env.JWT_SECRET || 'your_jwt_secret';
-            const jwtDecode = jwt.verify(token, secretKey) as JwtPayload;
-            const customerId = jwtDecode.id;
+            const customerId = extractCustomerIdFromToken(req);
             
             // GetPromptQuery ile veritabanı sorgusu yap
             const existingPrompt = await this.getPromptQuery.execute(request.prompt, request.languageCode);
