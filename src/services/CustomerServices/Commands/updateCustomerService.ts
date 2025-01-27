@@ -12,7 +12,6 @@ interface UpdateCustomerData extends Partial<Omit<Customer, 'createdAt'>> {
     refreshTokenExpiryDate?: Date;
     membershipType: MembershipType;
     clientDate: Date;
-    updatedAt: Date;
 }
 
 export class UpdateCustomerService {
@@ -29,7 +28,7 @@ export class UpdateCustomerService {
             refreshToken: data.refreshToken,
             refreshTokenExpiryDate: data.refreshTokenExpiryDate,
             membershipType: data.membershipType,
-            updatedAt: data.updatedAt
+            updatedAt: data.clientDate
         };
 
         await update(customerRef, customer);

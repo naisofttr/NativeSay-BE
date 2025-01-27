@@ -68,8 +68,7 @@ export class CustomerService {
                     refreshToken: tokenInfo.refreshToken,
                     refreshTokenExpiryDate,
                     membershipType,
-                    clientDate,
-                    updatedAt: clientDate
+                    clientDate
                 });
             } else {
                 // Yeni müşteri oluştur
