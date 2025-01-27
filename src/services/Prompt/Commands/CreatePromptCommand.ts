@@ -11,7 +11,8 @@ export class CreatePromptCommand {
         const promptData = {
             ...createPromptDto,
             customerId: createPromptDto.customerId,
-            id: newPromptRef.key
+            id: newPromptRef.key,
+            confirmedCount: 1
         };
         
         await set(newPromptRef, promptData);
