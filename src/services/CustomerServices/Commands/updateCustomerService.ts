@@ -1,39 +1,38 @@
 import { Customer } from '../../../models/customer';
 import { database } from '../../../config/database';
-import { ref, update, get } from 'firebase/database';
+import { ref, update } from 'firebase/database';
+import { MembershipType } from '../../../enums/MembershipType';
+
+interface UpdateCustomerData extends Partial<Omit<Customer, 'createdAt'>> {
+    id: string;
+    email: string;
+    name: string;
+    profilePhotoUrl?: string | null;
+    refreshToken?: string;
+    refreshTokenExpiryDate?: Date;
+    membershipType: MembershipType;
+    clientDate: Date;
+    updatedAt: Date;
+}
 
 export class UpdateCustomerService {
     private readonly CUSTOMERS_REF = 'customers';
 
-    async updateCustomer(customerId: string, data: Partial<Customer>): Promise<Customer> {
-        try {
-            // Get customer reference by ID
-            const customerRef = ref(database, `${this.CUSTOMERS_REF}/${customerId}`);
-            const snapshot = await get(customerRef);
-            
-            if (!snapshot.exists()) {
-                throw new Error('Müşteri bulunamadı');
-            }
+    async updateCustomer(data: UpdateCustomerData): Promise<Customer> {
+        const customerRef = ref(database, `${this.CUSTOMERS_REF}/${data.id}`);
 
-            const customer = snapshot.val();
+        const customer: Customer = {
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            profilePhotoUrl: data.profilePhotoUrl || null,
+            refreshToken: data.refreshToken,
+            refreshTokenExpiryDate: data.refreshTokenExpiryDate,
+            membershipType: data.membershipType,
+            updatedAt: data.updatedAt
+        };
 
-            // Update customer in Firebase
-            const updatedData = {
-                ...data,
-                updatedAt: data.updatedAt ? new Date(data.updatedAt).toISOString() : new Date().toISOString()
-            };
-
-            await update(customerRef, updatedData);
-
-            // Return updated customer data
-            return {
-                ...customer,
-                ...updatedData
-            };
-        } catch (error) {
-            throw error instanceof Error 
-                ? error 
-                : new Error('Müşteri güncellenirken bir hata oluştu');
-        }
+        await update(customerRef, customer);
+        return customer;
     }
 }
