@@ -6,6 +6,7 @@ import { GetPromptQuery } from './GetPromptQuery';
 import { CreatePromptCommand } from '../Commands/CreatePromptCommand';
 import { Request } from 'express';
 import { extractCustomerIdFromToken } from '../../../utils/jwtUtils';
+import { getChatGptPrompt } from '../../ChatGptServices/getChatGptPrompt';
 
 export class GetPromptService {
     private apiKey: string;
@@ -34,29 +35,15 @@ export class GetPromptService {
             }
 
             // Eğer sonuç dönmezse, ChatGPT API'sine istek at
-            const response = await axios.post<ChatGPTResponse>(
+            const response = await getChatGptPrompt(
                 this.endpoint,
-                {
-                    model: "gpt-3.5-turbo", // 3.5-turbo veya "gpt-4"
-                    messages: [
-                        {
-                            role: "user",
-                            content: `In ${request.languageCode} language explanation for the '${request.prompt}'?(max.50char)`
-                        }
-                    ],
-                    max_tokens: 100,
-                    temperature: 0.7
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${this.apiKey}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
+                this.apiKey,
+                request.languageCode,
+                request.prompt
             );
 
-            if (response.data.choices && response.data.choices.length > 0) {
-                const servicePromptResponse = response.data.choices[0].message.content;
+            if (response.choices && response.choices.length > 0) {
+                const servicePromptResponse = response.choices[0].message.content;
 
                 // CreatePromptCommand ile veritabanına kayıt yap
                 await this.createPromptCommand.execute({
