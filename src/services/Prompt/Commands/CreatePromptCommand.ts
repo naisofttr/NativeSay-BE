@@ -1,21 +1,22 @@
 import { database } from '../../../config/database';
 import { CreatePromptDto } from '../../../dtos/Prompt/CreatePromptDto';
 import { Prompt } from '../../../models/prompt';
-import { ref, push, set } from 'firebase/database';
+import { ref, set } from 'firebase/database';
+import { v4 as uuidv4 } from 'uuid';
 
 export class CreatePromptCommand {
     async execute(createPromptDto: CreatePromptDto): Promise<Prompt> {
-        const promptsRef = ref(database, 'prompts');
-        const newPromptRef = push(promptsRef);
+        const id = uuidv4();
+        const promptsRef = ref(database, `prompts/${id}`);
         
         const promptData = {
             ...createPromptDto,
             customerId: createPromptDto.customerId,
-            id: newPromptRef.key,
+            id,
             confirmedCount: 1
         };
         
-        await set(newPromptRef, promptData);
+        await set(promptsRef, promptData);
         return promptData as Prompt;
     }
 }
