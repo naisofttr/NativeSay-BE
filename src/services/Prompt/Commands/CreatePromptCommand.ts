@@ -13,7 +13,8 @@ export class CreatePromptCommand {
             ...createPromptDto,
             customerId: createPromptDto.customerId,
             id,
-            confirmedCount: 1
+            confirmedCount: 1,
+            promptServiceType: createPromptDto.promptServiceType
         };
         
         await set(promptsRef, promptData);
