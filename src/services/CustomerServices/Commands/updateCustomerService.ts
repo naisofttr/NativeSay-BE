@@ -20,9 +20,16 @@ export class UpdateCustomerService {
                 throw new Error('Customer bulunamadı');
             }
 
-            // membershipType güncelle
+            const customerKey = Object.keys(snapshot.val())[0];
+            const existingCustomer = snapshot.val()[customerKey];
+
+            // Tüm alanları güncelle
             const updates = {
-                [`/customers/${req.id}/membershipType`]: req.membershipType
+                [`/customers/${req.id}`]: {
+                    ...existingCustomer,
+                    ...req,
+                    updatedAt: new Date().toISOString()
+                }
             };
 
             await update(ref(database), updates);
@@ -33,4 +40,3 @@ export class UpdateCustomerService {
         }
     }
 }
-
