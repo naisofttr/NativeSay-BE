@@ -8,8 +8,8 @@ export interface Customer {
     refreshToken?: string;
     refreshTokenExpiryDate?: Date;
     membershipType: MembershipType;
-    createdAt?: Date;
-    updatedAt?: Date | null;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface CreatedCustomerResponse {

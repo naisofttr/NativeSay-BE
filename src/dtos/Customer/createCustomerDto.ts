@@ -6,6 +6,6 @@ export interface CreateCustomerDto {
     Email: string;
     Name: string;
     ProfilePhotoUrl?: string;
-    ClientDate: Date;
+    ClientDate: string;
     MembershipType?: MembershipType;
 }

@@ -26,7 +26,7 @@ export class LoginWithAppleService {
                 appleUser.email,
                 customerData.Name,
                 customerData.ProfilePhotoUrl || '', 
-                new Date(customerData.ClientDate),
+                customerData.ClientDate,
                 customerData.MembershipType
             );
         } catch (error) {

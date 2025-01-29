@@ -21,7 +21,7 @@ export class CustomerService {
         email: string,
         name: string,
         profilePhotoUrl: string,
-        clientDate: Date,
+        clientDate: string,
         membershipType: MembershipType = MembershipType.FREE
     ): Promise<CreatedCustomerResponse> {
         try {
@@ -77,7 +77,7 @@ export class CustomerService {
                     refreshToken: tokenInfo.refreshToken,
                     refreshTokenExpiryDate,
                     membershipType,
-                    clientDate
+                    createdAt: clientDate
                 });
             }
 
