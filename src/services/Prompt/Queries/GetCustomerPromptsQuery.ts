@@ -14,7 +14,7 @@ export class GetCustomerPromptsQuery {
             const promptsRef = ref(database, 'promptHistory');
             const promptQuery = query(
                 promptsRef,
-                orderByChild('ceatedAt'),
+                orderByChild('createdAt'),
                 equalTo(customerId)
             );
 
