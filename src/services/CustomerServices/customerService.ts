@@ -64,7 +64,7 @@ export class CustomerService {
                 customer.refreshToken = tokenInfo.refreshToken;
                 customer.membershipType = membershipType;
                 customer.updatedAt = clientDate;
-                customer.refreshTokenExpiryDate = refreshTokenExpiryDate.toString(),
+                customer.refreshTokenExpiryDate = refreshTokenExpiryDate.toISOString(),
                 customer.membershipType = membershipType,
                 await this.updateCustomerService.execute(customer);
                 customerData = customer;
