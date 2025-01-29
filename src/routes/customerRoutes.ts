@@ -6,6 +6,6 @@ const router = express.Router();
 const customerController = new CustomerController();
 
 // Müşteri güncelleme endpoint'i
-//router.post('/customer/update', verifyRefreshTokenMiddleware, (req, res) => customerController.updateCustomer(req, res));
+router.post('/customer/update', verifyRefreshTokenMiddleware, (req, res) => customerController.updateCustomer(req, res));
 
 export default router;

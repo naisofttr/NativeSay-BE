@@ -1,37 +1,36 @@
-import { Customer } from '../../../models/customer';
 import { database } from '../../../config/database';
-import { ref, update } from 'firebase/database';
-import { MembershipType } from '../../../enums/MembershipType';
-
-interface UpdateCustomerData extends Partial<Omit<Customer, 'createdAt'>> {
-    id: string;
-    email: string;
-    name: string;
-    profilePhotoUrl?: string | null;
-    refreshToken?: string;
-    refreshTokenExpiryDate?: Date;
-    membershipType: MembershipType;
-    clientDate: Date;
-}
+import { ref, update, get, query, orderByChild, equalTo } from 'firebase/database';
+import { Customer } from '../../../models/customer';
 
 export class UpdateCustomerService {
-    private readonly CUSTOMERS_REF = 'customers';
+    async execute(req: Customer): Promise<void> {
+        try {
+            const customerRef = ref(database, 'customers');
 
-    async updateCustomer(data: UpdateCustomerData): Promise<Customer> {
-        const customerRef = ref(database, `${this.CUSTOMERS_REF}/${data.id}`);
+            // id'a göre customer'u bul
+            const customerQuery = query(
+                customerRef,
+                orderByChild('id'),
+                equalTo(req.id)
+            );
 
-        const customer: Customer = {
-            id: data.id,
-            email: data.email,
-            name: data.name,
-            profilePhotoUrl: data.profilePhotoUrl || null,
-            refreshToken: data.refreshToken,
-            refreshTokenExpiryDate: data.refreshTokenExpiryDate,
-            membershipType: data.membershipType,
-            updatedAt: data.clientDate
-        };
-        // dogru calismadigi icin gecici olarak update islemleri devre disi birakildi.
-        //await update(customerRef, customer);
-        return customer;
+            const snapshot = await get(customerQuery);
+
+            if (!snapshot.exists()) {
+                throw new Error('Customer bulunamadı');
+            }
+
+            // membershipType güncelle
+            const updates = {
+                [`/customers/${req.id}/membershipType`]: req.membershipType
+            };
+
+            await update(ref(database), updates);
+
+        } catch (error) {
+            console.error('Error updating customer:', error);
+            throw error;
+        }
     }
 }
+

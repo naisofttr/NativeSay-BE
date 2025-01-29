@@ -59,17 +59,14 @@ export class CustomerService {
             let customerData: Customer;
 
             if (customer) {
-                // Mevcut müşteriyi güncelle
-                customerData = await this.updateCustomerService.updateCustomer({
-                    id: customer.id,
-                    email: customer.email,
-                    name,
-                    profilePhotoUrl,
-                    refreshToken: tokenInfo.refreshToken,
-                    refreshTokenExpiryDate,
-                    membershipType,
-                    clientDate
-                });
+                // Mevcut Müşteriyi Güncelle
+                customer.name = name;
+                customer.refreshToken = tokenInfo.refreshToken;
+                customer.membershipType = membershipType;
+                customer.updatedAt = clientDate;
+                await this.updateCustomerService.execute(customer);
+                customerData = customer;
+                console.log('Customer updated successfully.');
             } else {
                 // Yeni müşteri oluştur
                 customerData = await this.createCustomerService.createCustomer({
