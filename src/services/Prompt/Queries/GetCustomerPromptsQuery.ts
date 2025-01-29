@@ -6,25 +6,36 @@ interface PromptData {
     text: string;
     servicePromptResponse: string;
     customerId: string;
+    createdAt: string;
 }
 
 export class GetCustomerPromptsQuery {
     async execute(customerId: string): Promise<CustomerPromptResponseDto[]> {
         try {
             const promptsRef = ref(database, 'promptHistory');
-            const promptQuery = query(
+            
+            // Önce customerId'ye göre filtrele
+            const customerPromptsQuery = query(
                 promptsRef,
-                orderByChild('createdAt'),
+                orderByChild('customerId'),
                 equalTo(customerId)
             );
 
-            const snapshot = await get(promptQuery);
+            const snapshot = await get(customerPromptsQuery);
             
             if (!snapshot.exists()) {
                 return [];
             }
 
-            return Object.values(snapshot.val() as Record<string, PromptData>).map(prompt => ({
+            // Tüm promptları al ve createdAt'e göre sırala
+            const allPrompts = Object.values(snapshot.val() as Record<string, PromptData>);
+            
+            // En yeniden en eskiye doğru sırala
+            const sortedPrompts = allPrompts.sort((a, b) => {
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
+
+            return sortedPrompts.map(prompt => ({
                 text: prompt.text,
                 servicePromptResponse: prompt.servicePromptResponse
             }));
