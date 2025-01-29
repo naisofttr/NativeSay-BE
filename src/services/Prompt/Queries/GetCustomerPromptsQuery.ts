@@ -11,7 +11,7 @@ interface PromptData {
 export class GetCustomerPromptsQuery {
     async execute(customerId: string): Promise<CustomerPromptResponseDto[]> {
         try {
-            const promptsRef = ref(database, 'prompts');
+            const promptsRef = ref(database, 'promptHistory');
             const promptQuery = query(
                 promptsRef,
                 orderByChild('customerId'),

@@ -13,7 +13,7 @@ export class CreatePromptCommand {
             ...createPromptDto,
             customerId: createPromptDto.customerId,
             id,
-            confirmedCount: 1,
+            confirmedCount: 0,
             promptServiceType: createPromptDto.promptServiceType
         };
         

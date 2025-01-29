@@ -9,6 +9,7 @@ import { extractCustomerIdFromToken } from '../../../utils/jwtUtils';
 import { getDeepSeekPrompt } from '../../DeepSeekServices/getDeepSeekPrompt';
 import { getChatGptPrompt } from '../../ChatGptServices/getChatGptPrompt';
 import { PromptServiceType } from '../../../enums/PromptServiceType';
+import { CreatePromptHistoryCommand } from '../Commands/CreatePromptHistoryCommand';
 
 export class GetPromptService {
     private gptApiKey: string;
@@ -17,6 +18,7 @@ export class GetPromptService {
     private deepEndpoint: string;
     private getPromptQuery: GetPromptQuery;
     private createPromptCommand: CreatePromptCommand;
+    private createPromptHistoryCommand: CreatePromptHistoryCommand;
 
     constructor() {
         this.gptApiKey = process.env.OPENAI_API_KEY || '';
@@ -25,6 +27,7 @@ export class GetPromptService {
         this.deepEndpoint = process.env.DEEPSEEK_ENDPOINT || 'https://api.deepseek.com';
         this.getPromptQuery = new GetPromptQuery();
         this.createPromptCommand = new CreatePromptCommand();
+        this.createPromptHistoryCommand = new CreatePromptHistoryCommand();
     }
 
     async getPromptResponse(request: PromptRequest, req: Request): Promise<PromptResponse> {
@@ -65,7 +68,7 @@ export class GetPromptService {
                 const servicePromptResponse = response.choices[0].message.content;
 
                 // CreatePromptCommand ile veritabanına kayıt yap
-                await this.createPromptCommand.execute({
+                const createdPrompt = await this.createPromptCommand.execute({
                     customerId: customerId,
                     text: request.prompt,
                     languageCode: request.languageCode,
@@ -73,9 +76,16 @@ export class GetPromptService {
                     promptServiceType: promptServiceType
                 });
 
+                const createdPromptHistory = await this.createPromptHistoryCommand.execute({
+                    promptId: createdPrompt.id,
+                    customerId: customerId,
+                    text: request.prompt,
+                    servicePromptResponse: servicePromptResponse
+                });
+
                 return {
                     message: servicePromptResponse,
-                    confirmedCount: 1
+                    confirmedCount: 0
                 };
             }
 
