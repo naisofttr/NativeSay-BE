@@ -9,7 +9,7 @@ interface CreateCustomerData {
     name: string;
     profilePhotoUrl?: string | null;
     refreshToken?: string;
-    refreshTokenExpiryDate?: Date;
+    refreshTokenExpiryDate?: string;
     membershipType: MembershipType;
     createdAt?: string;
 }

@@ -64,18 +64,21 @@ export class CustomerService {
                 customer.refreshToken = tokenInfo.refreshToken;
                 customer.membershipType = membershipType;
                 customer.updatedAt = clientDate;
+                customer.refreshTokenExpiryDate = refreshTokenExpiryDate.toString(),
+                customer.membershipType = membershipType,
                 await this.updateCustomerService.execute(customer);
                 customerData = customer;
                 console.log('Customer updated successfully.');
             } else {
                 // Yeni müşteri oluştur
+                const expiryDate = refreshTokenExpiryDate.toISOString();
                 customerData = await this.createCustomerService.createCustomer({
                     id,
                     email,
                     name,
                     profilePhotoUrl,
                     refreshToken: tokenInfo.refreshToken,
-                    refreshTokenExpiryDate,
+                    refreshTokenExpiryDate: expiryDate,
                     membershipType,
                     createdAt: clientDate
                 });
