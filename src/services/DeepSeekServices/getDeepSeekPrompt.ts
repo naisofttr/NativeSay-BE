@@ -1,4 +1,5 @@
 import axios from "axios";
+import { generatePromptContent } from "../../utils/promptContentGenerator";
 
 export const getDeepSeekPrompt = async (
     endpoint: string,
@@ -7,8 +8,9 @@ export const getDeepSeekPrompt = async (
     prompt: string
 ): Promise<any> => {
     try {
+        const generatedPrompt = generatePromptContent(languageCode, prompt);
         const response = await axios.post(endpoint, {
-            text: prompt,
+            text: generatedPrompt,
             target_language: languageCode,
             max_characters: 50 // 50 karakter ile sınırlı
         }, {

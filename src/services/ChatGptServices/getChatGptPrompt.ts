@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { ChatGPTResponse } from '../../dtos/ChatGPT/ChatGPTResponseDto';
+import { generatePromptContent } from '../../utils/promptContentGenerator';
 
 export const getChatGptPrompt = async (
     endpoint: string,
@@ -14,7 +15,7 @@ export const getChatGptPrompt = async (
             messages: [
                 {
                     role: "user",
-                    content: `In ${languageCode} language explanation for the '${prompt}'?(max.50char)`
+                    content: generatePromptContent(languageCode, prompt)
                 }
             ],
             max_tokens: 100,
