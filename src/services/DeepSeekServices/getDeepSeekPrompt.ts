@@ -1,5 +1,7 @@
 import axios from "axios";
 import { generatePromptContent } from "../../utils/promptContentGenerator";
+import OpenAI from "openai";
+
 
 export const getDeepSeekPrompt = async (
     endpoint: string,
@@ -9,23 +11,16 @@ export const getDeepSeekPrompt = async (
 ): Promise<any> => {
     try {
         const generatedPrompt = generatePromptContent(languageCode, prompt);
-        const response = await axios.post(endpoint, {
-            text: generatedPrompt,
-            target_language: languageCode,
-            max_characters: 50 // 50 karakter ile sınırlı
-        }, {
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
-            }
+        const openai = new OpenAI({
+            baseURL: endpoint,
+            apiKey: apiKey
+        });
+        const response = await openai.chat.completions.create({
+            messages: [{ role: "system", content: generatedPrompt }],
+            model: "deepseek-chat",
         });
 
-        // API'den gelen yanıtı işle
-        // const translation = response.data.translation;
-        // const explanation = response.data.explanation;
-        // const description = response.data.description;
-
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Error fetching DeepSeek prompt:', error);
         // throw error;
