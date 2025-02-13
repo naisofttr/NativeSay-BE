@@ -2,6 +2,7 @@ import { CreatedCustomerResponse } from '../../models/customer';
 import { CreateCustomerDto } from '../../dtos/Customer/createCustomerDto';
 import { GoogleAuthService } from './googleAuthService';
 import { CustomerService } from '../CustomerServices/customerService';
+import { Platform } from '../../enums/Platform';
 
 export class LoginWithGoogleService {
     private googleAuthService: GoogleAuthService;
@@ -12,14 +13,14 @@ export class LoginWithGoogleService {
         this.customerService = new CustomerService();
     }
 
-    private async validateGoogleToken(idToken: string): Promise<boolean> {
-        return await this.googleAuthService.verifyGoogleToken(idToken);
+    private async validateGoogleToken(idToken: string, platform: Platform): Promise<boolean> {
+        return await this.googleAuthService.verifyGoogleToken(idToken, platform);
     }
 
     async loginWithGoogle(customerData: CreateCustomerDto): Promise<CreatedCustomerResponse> {
         try {
             // Google token'ı doğrula
-            const isValidToken = await this.validateGoogleToken(customerData.IdToken);
+            const isValidToken = await this.validateGoogleToken(customerData.IdToken, customerData.Platform);
             if (!isValidToken) {
                 return {
                     success: false,
@@ -43,4 +44,4 @@ export class LoginWithGoogleService {
             };
         }
     }
-} 
+}

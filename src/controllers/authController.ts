@@ -12,12 +12,12 @@ export class AuthController {
 
     async login(req: Request, res: Response) {
         try {
-            const { IdToken, ClientDate, Email, Name, ProfilePhotoUrl, LoginType: loginType, MembershipType: membershipType } = req.body;
+            const { IdToken, ClientDate, Email, Name, ProfilePhotoUrl, LoginType: loginType, MembershipType: membershipType, Platform } = req.body;
 
-            if (!IdToken || !ClientDate || !Email || !Name || !loginType) {
+            if (!IdToken || !ClientDate || !Email || !Name || !loginType || !Platform) {
                 return res.status(400).json({
                     success: false,
-                    message: 'IdToken, ClientDate, Email, Name ve LoginType zorunlu alanlardır'
+                    message: 'IdToken, ClientDate, Email, Name, LoginType ve Platform zorunlu alanlardır'
                 });
             }
 
@@ -27,7 +27,8 @@ export class AuthController {
                 Name, 
                 ProfilePhotoUrl, 
                 ClientDate,
-                MembershipType: membershipType || MembershipType.FREE 
+                MembershipType: membershipType || MembershipType.FREE,
+                Platform
             };
             const result = await this.loginService.handleLogin(customerData, loginType);
 

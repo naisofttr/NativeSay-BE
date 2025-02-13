@@ -1,4 +1,5 @@
 import { MembershipType } from '../../enums/MembershipType';
+import { Platform } from '../../enums/Platform';
 
 export interface CreateCustomerDto {
     Id?: string;
@@ -8,4 +9,5 @@ export interface CreateCustomerDto {
     ProfilePhotoUrl?: string;
     ClientDate: string;
     MembershipType?: MembershipType;
+    Platform: Platform;
 }

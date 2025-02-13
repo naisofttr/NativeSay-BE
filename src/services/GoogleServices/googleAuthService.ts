@@ -1,25 +1,30 @@
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import { TokenResponse } from '../../models/auth';
+import { Platform } from '../../enums/Platform';
 
 export class GoogleAuthService {
     private client: OAuth2Client;
 
     constructor() {
-        if (!process.env.GOOGLE_CLIENT_ID) {
-            throw new Error('GOOGLE_CLIENT_ID is not defined in environment variables');
-        }
-        this.client = new OAuth2Client({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET
-        });
+        this.client = new OAuth2Client();
     }
 
-    async verifyGoogleToken(token: string): Promise<boolean> {
+    private getClientId(platform: Platform): string {
+        const clientId = process.env[`GOOGLE_CLIENT_ID_${platform}`];
+        if (!clientId) {
+            throw new Error(`GOOGLE_CLIENT_ID_${platform} is not defined in environment variables`);
+        }
+        return clientId;
+    }
+
+    async verifyGoogleToken(token: string, platform: Platform): Promise<boolean> {
         try {
+            const clientId = this.getClientId(platform);
+            
             const ticket = await this.client.verifyIdToken({
                 idToken: token,
-                audience: process.env.GOOGLE_CLIENT_ID
+                audience: clientId
             });
 
             const payload = ticket.getPayload();
@@ -35,4 +40,4 @@ export class GoogleAuthService {
             return false;
         }
     }
-} 
+}
