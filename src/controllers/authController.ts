@@ -14,7 +14,7 @@ export class AuthController {
         try {
             const { IdToken, ClientDate, Email, Name, ProfilePhotoUrl, LoginType: loginType, MembershipType: membershipType, Platform } = req.body;
 
-            if (!IdToken || !ClientDate || !Email || !Name || !loginType || !Platform) {
+            if (!IdToken || !ClientDate || !loginType || !Platform) {
                 return res.status(400).json({
                     success: false,
                     message: 'IdToken, ClientDate, Email, Name, LoginType ve Platform zorunlu alanlardır'
