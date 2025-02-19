@@ -45,12 +45,12 @@ export class GetPromptService {
 
             let promptServiceType = PromptServiceType.DeepSeek;
             // DeepSeek API'sine istek at
-            let response = await getDeepSeekPrompt(
+            let response = undefined;/*await getDeepSeekPrompt( // deepseek api leri calisana kadar dogrudan chatgpt apisine yonelmesi icin deepseek devre disi birakildi.
                this.deepEndpoint,
                this.deepApiKey,
                request.languageCode,
                request.prompt
-            );
+            );*/
             // Eğer sonuç dönmezse, ChatGpt API'sine istek at
             if (response === undefined){
                 const responseChatGpt = await getChatGptPrompt(
