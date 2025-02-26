@@ -11,7 +11,7 @@ export const getChatGptPrompt = async (
     const response = await axios.post<ChatGPTResponse>(
         endpoint,
         {
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini", //gpt-4o-mini // gpt-3.5-turbo
             messages: [
                 {
                     role: "user",
