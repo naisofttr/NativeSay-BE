@@ -1,14 +1,17 @@
 import { Request, Response } from 'express';
 import { UpdateCustomerService } from '../services/CustomerServices/Commands/updateCustomerService';
+import { DeleteCustomerService } from '../services/CustomerServices/Commands/deleteCustomerService';
 import { extractCustomerIdFromToken } from '../utils/jwtUtils';
 import { GetCustomerByIdQuery } from '../services/CustomerServices/Queries/getCustomerByIdQuery';
 
 export class CustomerController {
     private updateCustomerService: UpdateCustomerService;
+    private deleteCustomerService: DeleteCustomerService;
     private getCustomerByIdQuery: GetCustomerByIdQuery;
 
     constructor() {
         this.updateCustomerService = new UpdateCustomerService();
+        this.deleteCustomerService = new DeleteCustomerService();
         this.getCustomerByIdQuery = new GetCustomerByIdQuery();
     }
 
@@ -50,6 +53,33 @@ export class CustomerController {
             return res.status(500).json({
                 success: false,
                 message: `Müşteri güncellenirken bir hata oluştu: ${errorMessage}`
+            });
+        }
+    }
+
+    async deleteCustomer(req: Request, res: Response) {
+        try {
+            const customerId = extractCustomerIdFromToken(req);
+    
+            if (!customerId) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Geçersiz token.'
+                });
+            }
+    
+            await this.deleteCustomerService.execute(customerId);
+    
+            return res.status(200).json({
+                success: true,
+                message: 'Müşteri başarıyla silindi'
+            });
+    
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';
+            return res.status(500).json({
+                success: false,
+                message: `Müşteri silinirken bir hata oluştu: ${errorMessage}`
             });
         }
     }

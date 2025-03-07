@@ -8,4 +8,7 @@ const customerController = new CustomerController();
 // Müşteri güncelleme endpoint'i
 router.post('/customer/update', verifyRefreshTokenMiddleware, (req, res) => customerController.updateCustomer(req, res));
 
+// Müşteri silme endpoint'i
+router.delete('/customer/delete', verifyRefreshTokenMiddleware, (req, res) => customerController.deleteCustomer(req, res));
+
 export default router;
